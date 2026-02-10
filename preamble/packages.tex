@@ -1,0 +1,43 @@
+% --- Encodage et Langue ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel} % Gestion des césures et titres en français
+
+% --- Mathématiques (Indispensables) ---
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathrsfs}   % Pour les tribus (ex: \mathscr{A}, \mathscr{F})
+\usepackage{mathtools}  % Pour \DeclarePairedDelimiter (normes, valeurs absolues)
+\usepackage{amsfonts}
+\usepackage{bbm}        % Pour la fonction indicatrice \mathbbm{1}
+
+% --- Couleurs et Graphiques ---
+\usepackage[dvipsnames]{xcolor} % Pour RoyalBlue et les gris
+\usepackage{graphicx}
+\usepackage{tikz}       % Pour les schémas de systèmes dynamiques
+\usetikzlibrary{cd}     % Pour les diagrammes commutatifs
+\usepackage[framemethod=TikZ]{mdframed} % Pour les encadrés (ex. le Disclaimer de titlepage)
+
+% --- Mise en page ---
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    margin=3cm,
+    headheight=14pt % Évite des warnings avec fancyhdr
+}
+\usepackage{microtype} % Améliore subtilement l'espacement des lettres (très pro)
+\usepackage{emptypage} % Rend les pages vraiment vides entre les chapitres
+
+% --- Liens et Références ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=RoyalBlue,
+    citecolor=PineGreen,
+    urlcolor=Magenta
+}
+\usepackage{cleveref}   % Pour \cref{label} qui écrit par exemple "Chapitre 1" tout seul
+
+% --- Bibliographie (Recommandé : BibLaTeX + Biber) ---
+\usepackage{csquotes}
+\usepackage[backend=biber, style=alphabetic]{biblatex}
+\addbibresource{bibliography/references.bib}

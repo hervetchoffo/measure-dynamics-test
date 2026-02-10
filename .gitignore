@@ -1,0 +1,46 @@
+## --- CORE LATEX (Fichiers auxiliaires de base) ---
+*.aux
+*.log
+*.toc
+*.out
+*.synctex.gz
+*.pdf
+*.fdb_latexmk
+*.fls
+
+## --- BIBLIOGRAPHIE (BibTeX / Biber) ---
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+## --- INDEX, GLOSSAIRES ET LISTES (lof, lot, ist) ---
+*.idx
+*.ilg
+*.ind
+*.ist
+*.glo
+*.gls
+*.glg
+*.lof
+*.lot
+
+## --- MINI-SOMMAIRES (Package minitoc : maf, mtc) ---
+*.maf
+*.mtc
+*.mtc[0-9]*
+
+## --- ÉDITEURS & SYSTÈME (VS Code, Linux Mint, etc.) ---
+.vscode/
+*.code-workspace
+*~
+.*.swp
+.DS_Store
+Thumbs.db
+
+## --- EXTENSIONS SPÉCIFIQUES ---
+pythontex-files-*/
+*.pytxcode
+
+## --- CI/CD METADATA ---
+version.tex

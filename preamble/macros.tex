@@ -1,0 +1,52 @@
+% ==================================================
+% Métadonnées globales
+% ==================================================
+\newcommand{\BookTitle}{Théorie de la mesure et systèmes dynamiques}
+\newcommand{\BookSubtitle}{Fondements, constructions et applications ergodiques}
+\newcommand{\BookAuthor}{TCHOFFO SONWA Hervé}
+\newcommand{\BookRepository}{https://github.com/hervetchoffo/measure-dynamics-book}
+
+% =========================
+% Métadonnées CI / CD
+% =========================
+\InputIfFileExists{version.tex}{
+  % Le fichier version.tex est généré par le pipeline CI/CD
+}{% Valeurs par défaut pour l'édition locale
+  \newcommand{\BookVersion}{dev}
+  \newcommand{\BookBranch}{local}
+  \newcommand{\BookCommit}{unknown}
+  \newcommand{\BookDate}{\today}
+  \newcommand{\BookStatus}{Version de relecture}
+  \newcommand{\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs. Remarques bienvenues via GitHub.}
+}
+
+% ==================================================
+% Macros structurelles
+% ==================================================
+\newcommand{\starredchapter}[1]{%
+  \cleardoublepage
+  \chapter*{#1}%
+  \markboth{#1}{#1}%
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+% ==================================================
+% Macros mathématiques
+% ==================================================
+% Ensembles
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+
+% Mesure & Probabilités
+\newcommand{\B}{\mathscr{B}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\ind}{\mathbbm{1}} % Nécessite bbm
+
+% Opérateurs (mieux avec DeclareMathOperator pour l'espacement)
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\diam}{diam}

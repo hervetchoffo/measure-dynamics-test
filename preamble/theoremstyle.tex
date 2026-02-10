@@ -1,0 +1,27 @@
+% --- Style pour les Théorèmes et résultats (Italique) ---
+\theoremstyle{plain}
+\newtheorem{theorem}{Théorème}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemme}
+\newtheorem{corollary}[theorem]{Corollaire}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+% --- Style pour les Définitions (Texte droit) ---
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Définition}
+\newtheorem{example}[theorem]{Exemple}
+\newtheorem{exercise}[theorem]{Exercice}
+\newtheorem{problem}[theorem]{Problème}
+
+% --- Style pour les Remarques et Notes ---
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remarque}
+\newtheorem{note}[theorem]{Note}
+\newtheorem{notation}[theorem]{Notation}
+
+% --- Configuration de Cleveref pour le Français ---
+% Permet de taper \cref{th:mon_theoreme} et d'obtenir "théorème 1.1"
+\crefname{theorem}{théorème}{théorèmes}
+\crefname{proposition}{proposition}{propositions}
+\crefname{definition}{définition}{définitions}
+\crefname{lemma}{lemme}{lemmes}

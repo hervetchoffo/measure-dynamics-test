@@ -1,0 +1,47 @@
+\begin{titlepage}
+    \centering
+    
+    \vspace*{2cm}
+    % --- Titre et Sous-titre ---
+    {\huge\bfseries\sffamily\color{RoyalBlue} \BookTitle \par}
+    \vspace{0.6cm}
+    {\Large\sffamily\color{gray} \BookSubtitle \par}
+    
+    \vspace{2cm}
+    
+    % --- Auteur ---
+    {\Large\bfseries \BookAuthor \par}
+    
+    \vfill
+
+    % --- Illustration ou logo (Optionnel) ---
+    % \includegraphics[width=0.4\textwidth]{logo.pdf} 
+    
+    \vfill
+    
+    % --- Bloc de Statut Dynamique ---
+    \begin{mdframed}[linewidth=1pt, linecolor=gray!20, backgroundcolor=gray!5, roundcorner=5pt]
+        \centering
+        \textbf{\sffamily \BookStatus} \\
+        \vspace{0.2cm}
+        \small \BookDisclaimer
+    \end{mdframed}
+
+    \vfill
+    
+    % --- Pied de page ---
+    {\small \copyright\ \the\year\ -- Tous droits réservés}
+
+    \vfill 
+
+    % --- Lien Repo & Métadonnées CI/CD ---
+    {\small\sffamily\color{gray}
+        \href{\BookRepository}{\texttt{\BookRepository}} \\
+        Version \BookVersion\ (\BookBranch) -- Commit \BookCommit \\
+        \BookDate
+    }
+
+\end{titlepage}
+
+% Page blanche après le titre pour respecter les standards éditoriaux
+\cleardoublepage
