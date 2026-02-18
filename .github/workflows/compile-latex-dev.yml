@@ -47,18 +47,14 @@ jobs:
               repo: context.repo.repo,
             });
 
-            const now = new Date();
-            const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
-
             console.log(`Found ${artifacts.artifacts.length} total artifacts.`);
 
             const devArtifacts = artifacts.artifacts
               .filter(artifact => artifact.name.startsWith('dev-pdf-'))
-              .filter(artifact => new Date(artifact.created_at) < sevenDaysAgo)
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
               .slice(5);
 
-            console.log(`Filtering to ${devArtifacts.length} dev-pdf-* artifacts older than 7 days.`);
+            console.log(`Filtering to ${devArtifacts.length} dev-pdf-* artifacts (at most the 5 latest).`);
 
             for (const artifact of devArtifacts) {
               try {
