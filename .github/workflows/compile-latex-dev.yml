@@ -1,9 +1,5 @@
 name: Compilation PDF (dev-version)
 
-permissions: 
-  actions: write 
-  contents: read
-
 on:
   push:
     branches-ignore:
@@ -39,6 +35,9 @@ jobs:
   cleanup-artifacts:
     needs: build-pdf
     runs-on: ubuntu-latest
+    permissions: 
+      actions: write 
+      contents: read
     steps:
       - name: Delete old artifacts (only from this workflow)
         uses: actions/github-script@v6
