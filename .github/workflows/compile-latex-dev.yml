@@ -58,7 +58,7 @@ jobs:
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
               .slice(5);
 
-            console.log(`Filtering to ${devArtifacts.length} dev-pdf-* artifacts (at most the 5 latest).`);
+            console.log(`Filtering to ${devArtifacts.length} dev-pdf-* artifacts (keeping at most the 5 latest ones).`);
 
             for (const artifact of devArtifacts) {
               try {
