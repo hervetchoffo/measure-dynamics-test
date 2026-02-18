@@ -48,7 +48,7 @@ jobs:
             });
 
             const now = new Date();
-            const sevenDaysAgo = new Date(now.setDate(now.getDate() - 1));
+            const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
 
             console.log(`Found ${artifacts.artifacts.length} total artifacts.`);
 
