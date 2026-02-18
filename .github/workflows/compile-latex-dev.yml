@@ -1,5 +1,9 @@
 name: Compilation PDF (dev-version)
 
+permissions: 
+  actions: write 
+  contents: read
+
 on:
   push:
     branches-ignore:
