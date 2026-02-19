@@ -13,7 +13,7 @@ jobs:
       - name: Injection des métadonnées (version.tex)
         run: |
           echo "\\newcommand{\\BookVersion}{review-copy}" > version.tex
-          echo "\\newcommand{\\BookBranch}{${GITHUB_REF_NAME}}" >> version.tex
+          echo "\\newcommand{\\BookBranch}{${GITHUB_HEAD_REF}}" >> version.tex
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de relecture}" >> version.tex
