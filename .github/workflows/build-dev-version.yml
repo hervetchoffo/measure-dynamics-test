@@ -14,11 +14,11 @@ jobs:
 
       - name: Injection des métadonnées (version.tex)
         run: |
-          echo "\\newcommand{\\BookVersion}{dev}" > version.tex
+          echo "\\newcommand{\\BookVersion}{working-copy}" > version.tex
           echo "\\newcommand{\\BookBranch}{${GITHUB_REF_NAME}}" >> version.tex
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
-          echo "\\newcommand{\\BookStatus}{Version de développement}" >> version.tex
+          echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
           echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
