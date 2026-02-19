@@ -1,9 +1,7 @@
-name: Build review PDF (feature-branch)
+name: Build review PDF
 
 on:
   pull_request:
-    branches-ignore:
-      - main
 
 jobs:
   build-pdf:
@@ -38,6 +36,46 @@ jobs:
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dev-pdf-${{ github.ref_name }}-${{ github.run_id }}
+          name: review-pdf-${{ github.ref_name }}-${{ github.run_id }}
           path: main.pdf
+
+  cleanup-artifacts:
+    needs: build-pdf
+    runs-on: ubuntu-latest
+    permissions: 
+      actions: write 
+      contents: read
+    steps:
+      - name: Delete old artifacts (only from this workflow)
+        uses: actions/github-script@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const { data: artifacts } = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            console.log(`Found ${artifacts.artifacts.length} total artifacts.`);
+
+            const devArtifacts = artifacts.artifacts
+              .filter(artifact => artifact.name.startsWith('review-pdf-'))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+              .slice(5);
+
+            console.log(`Filtering to ${devArtifacts.length} review-pdf-* artifacts (retaining no more than the 5 most recent ones).`);
+
+            for (const artifact of devArtifacts) {
+              try {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id,
+                });
+                console.log(`Deleted artifact ${artifact.name} (ID: ${artifact.id})`);
+              } catch (error) {
+                console.log(`Failed to delete artifact ${artifact.name}: ${error.message}`);
+              }
+            }
 
