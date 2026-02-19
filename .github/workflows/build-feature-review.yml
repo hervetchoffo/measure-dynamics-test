@@ -1,0 +1,43 @@
+name: Build review PDF (feature-branch)
+
+on:
+  pull_request:
+    branches-ignore:
+      - main
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Injection des métadonnées (version.tex)
+        run: |
+          echo "\\newcommand{\\BookVersion}{review-copy}" > version.tex
+          echo "\\newcommand{\\BookBranch}{${GITHUB_REF_NAME}}" >> version.tex
+          echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
+          echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
+          echo "\\newcommand{\\BookStatus}{Version de relecture}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
+
+      - name: Set up LaTeX and compile PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          args: -pdf -interaction=nonstopmode -shell-escape
+          compiler: latexmk
+
+      - name: Check if PDF exists
+        run: |
+          if [ ! -f "main.pdf" ]; then
+            echo "::error::PDF not found! Compilation failed."
+            exit 1
+          fi
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-pdf-${{ github.ref_name }}-${{ github.run_id }}
+          path: main.pdf
+
