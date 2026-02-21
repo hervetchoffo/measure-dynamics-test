@@ -42,7 +42,7 @@ jobs:
           path: main.pdf
 
   cleanup-artifacts:
-    needs: build-pdf
+    needs: build-pdf  # Attend que le job build-pdf soit terminé
     runs-on: ubuntu-latest
     permissions: 
       actions: write 
