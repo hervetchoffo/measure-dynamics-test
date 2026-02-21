@@ -528,7 +528,7 @@ jobs:
           path: main.pdf
 
   cleanup-artifacts:
-    needs: build-pdf
+    needs: build-pdf  # Attend que le job build-pdf soit terminé
     runs-on: ubuntu-latest
     permissions: 
       actions: write 
@@ -571,26 +571,38 @@ EOF
 # 15.2. Génération du fichier build-feature-review.yml
 echo "📝 Génération du workflow Build review PDF..."
 cat <<'EOF' > .github/workflows/build-feature-review.yml
-name: Build review PDF
+name: Build review PDF and notify reviewers
 
 on:
-  pull_request: {}
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
-  build-pdf:
+  build-review-pdf:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Get current commit
+        run: |
+          echo "CURRENT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Injection des métadonnées (version.tex)
         run: |
           echo "\\newcommand{\\BookVersion}{review-copy}" > version.tex
-          echo "\\newcommand{\\BookBranch}{${GITHUB_HEAD_REF}}" >> version.tex
-          echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
+          echo "\\newcommand{\\BookBranch}{${{ github.head_ref }}}" >> version.tex
+          echo "\\newcommand{\\BookCommit}{${{ env.CURRENT_COMMIT }}}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de relecture}" >> version.tex
-          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
@@ -612,45 +624,40 @@ jobs:
           name: review-pdf-${{ github.head_ref }}-${{ github.run_id }}
           path: main.pdf
 
-  cleanup-artifacts:
-    needs: build-pdf
-    runs-on: ubuntu-latest
-    permissions: 
-      actions: write 
-      contents: read
-    steps:
-      - name: Delete old artifacts (only from this workflow)
-        uses: actions/github-script@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Notify reviewers
+        uses: actions/github-script@v7
         with:
           script: |
-            const { data: artifacts } = await github.rest.actions.listArtifactsForRepo({
+            const run_id = context.runId;
+            const pull_number = context.issue.number;
+            const repo_url = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
+            const artifact_url = `${repo_url}/actions/runs/${run_id}`;
+            
+            const body = `
+            📄 **Nouveau PDF disponible pour relecture**
+            - **Branche** : \`${{ github.head_ref }}\`
+            - **Commit** : \`${{ env.CURRENT_COMMIT }}\`
+            - **Statut** : Version de relecture
+
+            📥 **[Télécharger le PDF ici](${artifact_url})**
+            *(Allez en bas de la page dans la section "Artifacts")*
+
+            Merci de faire une relecture de ce document et de laisser vos commentaires ici!
+
+            ---
+            ### Checklist pour la relecture :
+            - [ ] Vérifier la cohérence des notations
+            - [ ] Valider les démonstrations
+            - [ ] Corriger les fautes de français/typos
+            - [ ] S'assurer que les références sont correctes
+            `;
+
+            await github.rest.issues.createComment({
+              issue_number: pull_number,
               owner: context.repo.owner,
               repo: context.repo.repo,
+              body: body.trim()
             });
-
-            console.log(`Found ${artifacts.artifacts.length} total artifacts.`);
-
-            const devArtifacts = artifacts.artifacts
-              .filter(artifact => artifact.name.startsWith('review-pdf-'))
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-              .slice(5);
-
-            console.log(`Filtering to ${devArtifacts.length} review-pdf-* artifacts (retaining no more than the 5 most recent ones).`);
-
-            for (const artifact of devArtifacts) {
-              try {
-                await github.rest.actions.deleteArtifact({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  artifact_id: artifact.id,
-                });
-                console.log(`Deleted artifact ${artifact.name} (ID: ${artifact.id})`);
-              } catch (error) {
-                console.log(`Failed to delete artifact ${artifact.name}: ${error.message}`);
-              }
-            }
 EOF
 
 # 16. Premier Commit
