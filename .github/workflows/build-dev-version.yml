@@ -1,4 +1,4 @@
-name: Compilation PDF (dev-version)
+name: Build PDF (dev-version)
 
 on:
   push:
@@ -11,6 +11,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Injection des métadonnées (version.tex)
+        run: |
+          echo "\\newcommand{\\BookVersion}{working-copy}" > version.tex
+          echo "\\newcommand{\\BookBranch}{${GITHUB_REF_NAME}}" >> version.tex
+          echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
+          echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
+          echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
@@ -33,8 +42,11 @@ jobs:
           path: main.pdf
 
   cleanup-artifacts:
-    needs: build-pdf
+    needs: build-pdf  # Attend que le job build-pdf soit terminé
     runs-on: ubuntu-latest
+    permissions: 
+      actions: write 
+      contents: read
     steps:
       - name: Delete old artifacts (only from this workflow)
         uses: actions/github-script@v6
@@ -47,18 +59,14 @@ jobs:
               repo: context.repo.repo,
             });
 
-            const now = new Date();
-            const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
-
             console.log(`Found ${artifacts.artifacts.length} total artifacts.`);
 
             const devArtifacts = artifacts.artifacts
               .filter(artifact => artifact.name.startsWith('dev-pdf-'))
-              .filter(artifact => new Date(artifact.created_at) < sevenDaysAgo)
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
               .slice(5);
 
-            console.log(`Filtering to ${devArtifacts.length} dev-pdf-* artifacts older than 7 days.`);
+            console.log(`Filtering to ${devArtifacts.length} dev-pdf-* artifacts (retaining no more than the 5 most recent ones).`);
 
             for (const artifact of devArtifacts) {
               try {
