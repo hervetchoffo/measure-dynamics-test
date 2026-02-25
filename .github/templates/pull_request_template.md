@@ -1,42 +1,21 @@
-# 📖 Demande de relecture mathématique
+## Description
+Ce PR [ajoute/corrige] [décris brièvement les modifications].
 
-## Bloc concerné
-- [ ] Introduction
-- [ ] Chapitre :
-- [ ] Section / Partie :
-- [ ] Annexe :
+## Issue associée
+Fixes #
 
-Préciser :
-> ex. Chapitre 2C — Désintégration de Rokhlin
+## Type de modifications
+- [ ] Rédaction initiale
+- [ ] Correction de contenu
+- [ ] Correction de typographie
+- [ ] Ajout d'exemples ou d'exercices
 
----
+## Checklist pour les relecteurs
+- [ ] Vérifier la cohérence des notations.
+- [ ] Valider les démonstrations et les résultats.
+- [ ] Corriger les fautes de français.
+- [ ] Vérifier la compilation LaTeX.
 
-## Nature de la relecture demandée
-- [ ] Vérification des énoncés
-- [ ] Vérification des preuves
-- [ ] Cohérence des notations
-- [ ] Suggestions bibliographiques
-- [ ] Clarté / organisation
-
----
-
-## Points d’attention particuliers
-(à remplir par l’auteur)
-
-- …
-- …
-
----
-
-## Statut attendu après fusion
-- [ ] Toujours en rédaction
-- [ ] Prêt pour validation
-- [ ] Bloc considéré comme stable
-
----
-
-## PDF de relecture
-⬇️ Le PDF complet du livre est disponible dans les *Artifacts* de cette PR.
-
-Merci pour votre relecture 🙏
+## Contexte supplémentaire
+[Ajoute tout contexte utile pour les relecteurs.]
 
