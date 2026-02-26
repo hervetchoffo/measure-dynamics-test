@@ -580,6 +580,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  actions: write # Nécessaire pour supprimer les anciens artefacts
 
 jobs:
   build-review-pdf:
@@ -602,7 +603,7 @@ jobs:
           echo "\\newcommand{\\BookCommit}{${{ env.CURRENT_COMMIT }}}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de relecture}" >> version.tex
-          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs.}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
@@ -618,6 +619,34 @@ jobs:
             exit 1
           fi
 
+      - name: Cleanup old PDF artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const branchName = "${{ github.head_ref }}";
+            
+            const response = await github.rest.actions.listArtifactsForRepo({
+              owner,
+              repo,
+            });
+
+            // On filtre pour ne garder que les artefacts de cette branche
+            // en excluant celui du run actuel par sécurité
+            const oldArtifacts = response.data.artifacts.filter(art => 
+              art.name.startsWith(`review-pdf-${branchName}`) &&
+              art.workflow_run.id !== context.runId
+            );
+
+            for (const artifact of oldArtifacts) {
+              console.log(`Suppression de l'ancien artefact : ${artifact.name}`);
+              await github.rest.actions.deleteArtifact({
+                owner,
+                repo,
+                artifact_id: artifact.id,
+              });
+            }
+
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
@@ -628,21 +657,19 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const run_id = context.runId;
+            const { owner, repo } = context.repo;
             const pull_number = context.issue.number;
-            const repo_url = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
-            const artifact_url = `${repo_url}/actions/runs/${run_id}`;
+            const artifact_url = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
             
+            const comment_header = "📄 **Nouveau PDF disponible pour relecture**";
             const body = `
-            📄 **Nouveau PDF disponible pour relecture**
+            ${comment_header}
             - **Branche** : \`${{ github.head_ref }}\`
             - **Commit** : \`${{ env.CURRENT_COMMIT }}\`
-            - **Statut** : Version de relecture
+            - **Dernière mise à jour** : ${new Date().toLocaleString('fr-FR')}
 
             📥 **[Télécharger le PDF ici](${artifact_url})**
-            *(Allez en bas de la page dans la section "Artifacts")*
-
-            Merci de faire une relecture de ce document et de laisser vos commentaires ici!
+            *(Le lien se trouve en bas de la page, section "Artifacts")*
 
             ---
             ### Checklist pour la relecture :
@@ -652,12 +679,32 @@ jobs:
             - [ ] S'assurer que les références sont correctes
             `;
 
-            await github.rest.issues.createComment({
+            const comments = await github.rest.issues.listComments({
+              owner,
+              repo,
               issue_number: pull_number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body.trim()
             });
+
+            const botComment = comments.data.find(c => 
+              c.user.type === 'Bot' && 
+              c.body.includes(comment_header)
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: botComment.id,
+                body: body.trim()
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: body.trim()
+              });
+            }
 EOF
 
 # 16. Premier Commit
