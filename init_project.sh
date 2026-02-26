@@ -492,11 +492,17 @@ on:
       - main
 
 jobs:
-  build-pdf:
+  build-and-cleanup:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write  # Nécessaire pour supprimer les anciens artefacts
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # On n'a besoin que du commit actuel pour le hash court
 
       - name: Injection des métadonnées (version.tex)
         run: |
@@ -505,7 +511,7 @@ jobs:
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
-          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction. Suggestion via GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
@@ -521,49 +527,48 @@ jobs:
             exit 1
           fi
 
-      - name: Upload PDF artifact
+      - name: Upload current PDF artifact
         uses: actions/upload-artifact@v4
         with:
+          # Le nom inclut la branche et le run_id pour être unique
           name: dev-pdf-${{ github.ref_name }}-${{ github.run_id }}
           path: main.pdf
 
-  cleanup-artifacts:
-    needs: build-pdf  # Attend que le job build-pdf soit terminé
-    runs-on: ubuntu-latest
-    permissions: 
-      actions: write 
-      contents: read
-    steps:
-      - name: Delete old artifacts (only from this workflow)
-        uses: actions/github-script@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cleanup old artifacts (Keep last 5 for this branch)
+        uses: actions/github-script@v7
         with:
           script: |
-            const { data: artifacts } = await github.rest.actions.listArtifactsForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+            const { owner, repo } = context.repo;
+            const branchName = "${{ github.ref_name }}";
+            const prefix = `dev-pdf-${branchName}-`;
+
+            // 1. Récupérer les artefacts du dépôt
+            const { data: response } = await github.rest.actions.listArtifactsForRepo({
+              owner,
+              repo,
+              per_page: 100
             });
 
-            console.log(`Found ${artifacts.artifacts.length} total artifacts.`);
+            // 2. Filtrer par nom (branche actuelle uniquement) et trier par date décroissante
+            const branchArtifacts = response.artifacts
+              .filter(art => art.name.startsWith(prefix))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-            const devArtifacts = artifacts.artifacts
-              .filter(artifact => artifact.name.startsWith('dev-pdf-'))
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-              .slice(5);
+            // 3. Garder les 5 plus récents, supprimer les autres
+            const toDelete = branchArtifacts.slice(5);
 
-            console.log(`Filtering to ${devArtifacts.length} dev-pdf-* artifacts (retaining no more than the 5 most recent ones).`);
+            console.log(`Branche: ${branchName}. Artefacts trouvés: ${branchArtifacts.length}. Suppressions: ${toDelete.length}`);
 
-            for (const artifact of devArtifacts) {
+            for (const artifact of toDelete) {
               try {
                 await github.rest.actions.deleteArtifact({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
+                  owner,
+                  repo,
                   artifact_id: artifact.id,
                 });
-                console.log(`Deleted artifact ${artifact.name} (ID: ${artifact.id})`);
-              } catch (error) {
-                console.log(`Failed to delete artifact ${artifact.name}: ${error.message}`);
+                console.log(`Supprimé: ${artifact.name}`);
+              } catch (e) {
+                console.log(`Erreur sur ${artifact.name}: ${e.message}`);
               }
             }
 EOF
