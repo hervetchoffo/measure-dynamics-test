@@ -1,0 +1,111 @@
+name: Build Release PDF (Tags)
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*' # Déclenchement sur v1.0.0, v1.2.3-beta, etc.
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Crucial pour créer la Release et uploader le PDF
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Récupère tout l'historique pour lire les annotations des tags
+
+      - name: Verify Tag is on main branch
+        run: |
+          # On vérifie si origin/main contient le hash du tag actuel
+          if ! git branch -r --contains ${{ github.sha }} | grep -q "origin/main"; then
+            echo "::error::Action interrompue : Le tag ${{ github.ref_name }} n'a pas été créé depuis la branche main."
+            exit 1
+          fi
+          echo "Vérification réussie : Le tag est bien issu de la branche main."
+
+      - name: Parse Tag Metadata and Changelog
+        id: meta
+        run: |
+          TAG_NAME=${GITHUB_REF_NAME}
+          
+          # 1. Extraction du message du tag annoté (Changelog)
+          # On utilise le formatage git pour extraire le contenu du message -m
+          CHANGELOG=$(git tag -l --format='%(contents)' $TAG_NAME)
+          
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="Aucun détail spécifique fourni dans le tag."
+          fi
+
+          # 2. Détermination du statut pour LaTeX
+          if [[ "$TAG_NAME" == *"alpha"* ]]; then
+            STATUS="Version Alpha"
+            DISCLAIMER="Un ou plusieurs chapitre(s) ont été relu(s) et validé(s) mais le livre est actuelement incomplet. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          elif [[ "$TAG_NAME" == *"beta"* ]]; then
+            STATUS="Version Bêta"
+            DISCLAIMER="Tous les chapitres de ce livre sont actuellement présents mais une relecture globale est nécessaire. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          elif [[ "$TAG_NAME" == *"rc"* ]]; then
+            STATUS="Release Candidate"
+            DISCLAIMER="Version candidate à la publication stable et finalisée de l'ouvrage. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          else
+            STATUS="Édition Officielle"
+            DISCLAIMER="Version stable et finalisée de l'ouvrage."
+          fi
+          
+          # 3. Export vers GITHUB_OUTPUT (Gestion multi-lignes pour le changelog)
+          echo "tag_version=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "tag_status=$STATUS" >> $GITHUB_OUTPUT
+          echo "tag_disclaimer=$DISCLAIMER" >> $GITHUB_OUTPUT
+          echo "tag_changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Injection des métadonnées (version.tex)
+        run: |
+          echo "\\newcommand{\\BookVersion}{${{ steps.meta.outputs.tag_version }}}" > version.tex
+          echo "\\newcommand{\\BookBranch}{main}" >> version.tex
+          echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
+          echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
+          echo "\\newcommand{\\BookStatus}{${{ steps.meta.outputs.tag_status }}}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{${{ steps.meta.outputs.tag_disclaimer }}}" >> version.tex
+
+      - name: Set up LaTeX and compile PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          args: -pdf -interaction=nonstopmode -shell-escape
+          compiler: latexmk
+
+      - name: Check if PDF exists
+        run: |
+          if [ ! -f "main.pdf" ]; then
+            echo "::error::PDF not found! Compilation failed."
+            exit 1
+          fi
+
+      - name: Rename PDF
+        run: mv main.pdf measure_dynamics_book_${{ steps.meta.outputs.tag_version }}.pdf
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: measure_dynamics_book_${{ steps.meta.outputs.tag_version }}.pdf
+          name: Edition ${{ steps.meta.outputs.tag_version }}
+          tag_name: ${{ steps.meta.outputs.tag_version }}
+          body: |
+            ## 📘 Détails de cette édition
+            - **Statut actuel** : ${{ steps.meta.outputs.tag_status }}
+            - **Note** : ${{ steps.meta.outputs.tag_disclaimer }}
+            
+            ### 📝 Message du tag (Changelog) :
+            ${{ steps.meta.outputs.tag_changelog }}
+
+            ---
+            ### 🛠 Changements techniques et contributeurs :
+            *(Généré automatiquement par GitHub ci-dessous)*
+          generate_release_notes: true # Ajoute automatiquement les contributeurs et PRs fusionnées
+          draft: false
+          # Marque comme "Pre-release" si le tag contient alpha, beta ou rc
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
