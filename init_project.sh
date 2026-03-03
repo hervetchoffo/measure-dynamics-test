@@ -750,7 +750,7 @@ jobs:
           
           # 1. Extraction du message du tag annoté (Changelog)
           # On utilise for-each-ref qui est plus fiable dans les scripts
-          CHANGELOG=$(git for-each-ref refs/tags/$TAG_NAME --format='%(contents)'
+          CHANGELOG=$(git for-each-ref refs/tags/$TAG_NAME --format='%(contents)')
           
           if [ -z "$CHANGELOG" ]; then
             CHANGELOG="Aucun détail spécifique fourni dans le tag."
