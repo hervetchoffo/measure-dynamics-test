@@ -749,11 +749,13 @@ jobs:
           TAG_NAME=${GITHUB_REF_NAME}
           
           # 1. Extraction du message du tag annoté (Changelog)
-          # On utilise for-each-ref qui est plus fiable dans les scripts
-          CHANGELOG=$(git for-each-ref "refs/tags/${TAG_NAME}" --format='%(contents)')
-          
+          # Forcer la récupération des métadonnées des tags
+          git fetch --tags --force
+          # On utilise %(contents) pour récupérer tout le texte du tag annoté
+          CHANGELOG=$(git tag -l --format='%(contents)' "${TAG_NAME}")
+          # Si le changelog est vide, on essaie un fallback sur le message du commit
           if [ -z "$CHANGELOG" ]; then
-            CHANGELOG="Aucun détail spécifique fourni dans le tag."
+            CHANGELOG=$(git show -s --format='%s' "${TAG_NAME}")
           fi
 
           # 2. Détermination du statut pour LaTeX
