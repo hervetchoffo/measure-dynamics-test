@@ -721,11 +721,11 @@ on:
   push:
     tags:
       # Déclenchement sur v1.0.0, v1.2.3-beta, etc.
-      - 'v[0-9]+.[0-9]+.[0-9]'
-      - 'v[0-9]+.[0-9]+.[0-9]-alpha'
-      - 'v[0-9]+.[0-9]+.[0-9]-beta'
-      - 'v[0-9]+.[0-9]+.[0-9]-rc'
-      - 'v[0-9]+.[0-9]+.[0-9]-final'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta'
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc'
+      - 'v[0-9]+.[0-9]+.[0-9]+-final'
 
 jobs:
   build-release:
@@ -843,8 +843,7 @@ jobs:
           generate_release_notes: true # Ajoute automatiquement les contributeurs et PRs fusionnées
           draft: false
           # Marque comme "Pre-release" si le tag contient alpha, beta ou rc
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
-EOF
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}EOF
 
 # 16. Premier Commit
 git add .
