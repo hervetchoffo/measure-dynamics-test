@@ -752,12 +752,13 @@ jobs:
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
           # On vérifie si le tag est de la forme vX.Y.Z ou vX.Y.Z-alpha|beta|rc|final
-          if [[ ! "$TAG_NAME" =~ ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(alpha|beta|rc|final))?$ ]]; then
+          REGEX="^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(alpha|beta|rc|final))?$"
+          if [[ ! "$TAG_NAME" =~ $REGEX ]]; then
             echo "❌ Tag invalide : $TAG_NAME"
             echo "Format attendu : vX.Y.Z ou vX.Y.Z[-[alpha|beta|rc|final]]"
             exit 1
           fi
-          echo "Vérification réussie : Le tag est bien au format attendu."
+          echo "✅ Vérification réussie : $TAG_NAME est bien au format attendu."
 
       - name: Parse Tag Metadata and Changelog
         id: meta
@@ -843,7 +844,8 @@ jobs:
           generate_release_notes: true # Ajoute automatiquement les contributeurs et PRs fusionnées
           draft: false
           # Marque comme "Pre-release" si le tag contient alpha, beta ou rc
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}EOF
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+EOF
 
 # 16. Premier Commit
 git add .
