@@ -1,14 +1,9 @@
 ---
-name: Milestone
-about: Utilisez ce template pour documenter un milestone.
-title: "[Milestone] "
-labels: ["milestone"]
+name: Rajouter un jalon pour la livraison d'une release.
+about: Utilisez ce template pour documenter le jalon d'une release.
+title: "[Release] [TAG NAME][ : nom de la release]"
+labels: ["[nom_court_de_release]", "[haute|moyenne|faible]-priorite"]
 ---
-
-## Description
-**Type de milestone** : [Alpha/Bêta/RC/Finale]
-**Titre** :
-**Date limite** : YYYY-MM-DD
 
 ## Objectifs
 - [ ] Objectif 1
@@ -19,6 +14,17 @@ labels: ["milestone"]
 - [ ] Critère 2
 
 ## Issues/PRs liées
-- #123
-- #456
+- [ ] [lien vers PR ou ISSUE]
+- [ ] ...
+
+## Description
+**Type de milestone** : [Alpha|Bêta|RC|Finale]
+**Notes de release** : 
+  ### Nouveautés et améliorations principales
+- [Résumé fonctionnalité #1]
+- [Résumé fonctionnalité #2]
+....
+
+## Échéance
+Date limite : [date]
 
