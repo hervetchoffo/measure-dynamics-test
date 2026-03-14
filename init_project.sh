@@ -847,7 +847,112 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
 EOF
 
-# 16. Premier Commit
+# 16. Création des templates GitHub
+# 16.1. Génération du fichier writing_issue.md
+echo "📝 Génération du template de rédaction ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/writing_issue.md
+---
+name: Rédaction d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+about: Utilise ce template pour demander la rédaction d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+title: "[Rédaction] [nom(s) de(s) section(s)]"
+labels: ["redaction", "[nom_court_de_release]", "[nom_court_de_feature]", "[haute|moyenne|faible]-priorite"]
+---
+
+## Description
+Sections à rédiger : [nom(s) de(s) section(s)]
+Fichiers LaTeX : 
+- [ ] `path-to-file-1`
+- [ ] `path-to-file-2`
+- [ ] ...
+
+## Objectifs
+- [ ] Rédiger l'introduction et les objectifs.
+- [ ] Développer le contenu mathématique associé.
+- [ ] Ajouter des exemples et des démonstrations.
+- [ ] Inclure des exercices ou des applications.
+
+## Contexte
+[Décris brièvement le contenu attendu en t'appuyant sur la table des matières.]
+
+## Échéance
+Milestone : [lien vers le milestone]
+Date limite : [date]
+Assigné à : [@relecteur1, @relecteur2, ...]
+EOF
+
+# 15.2. Génération du fichier review_issue.md
+echo "📝 Génération du template de relecture ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/review_issue.md
+---
+name: Relecture d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+about: Utilise ce template pour demander une relecture d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+title: "[Relecture] [nom(s) de(s) section(s)]"
+labels: ["relecture", "[nom_court_de_release]", "[nom_court_de_feature]", "[haute|moyenne|faible]-priorite"]
+---
+
+## Description
+Sections à relire : [nom(s) de(s) section(s)]
+Fichiers LaTeX : 
+- [ ] `path-to-file-1`
+- [ ] `path-to-file-2`
+- [ ] ...
+Fichier PDF : Le PDF complet du livre est disponible dans les *Artifacts* de la PR associée.
+PR associée : [lien vers la PR]
+
+## Points à vérifier
+- [ ] Cohérence des notations avec le reste du livre.
+- [ ] Exactitude des démonstrations et des résultats.
+- [ ] Clarté des explications et des exemples.
+- [ ] Correction des fautes de français et de typographie.
+- [ ] Vérification des références croisées.
+- [ ] Suggestions bibliographiques.
+
+## Contexte
+[Décris les points spécifiques à vérifier ou les questions ouvertes.]
+
+## Échéance
+Milestone : [lien vers le milestone]
+Date limite : [date]
+Assigné à : [@relecteur1, @relecteur2, ...]
+EOF
+
+# 15.3. Génération du fichier correction_issue.md
+echo "📝 Génération du template de correction ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/correction_issue.md
+---
+name: Correction d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+about: Utilise ce template pour demander une correction d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+title: "[Correction] [nom de la correction]/[nom(s) de(s) section(s)]"
+labels: ["correction", "[nom_court_de_feature]", "[nom_court_de_release]", "[haute|moyenne|faible]-priorite"]
+---
+
+## Description
+Sections à corriger : [nom(s) de(s) section(s)]
+Fichiers LaTeX : 
+- [ ] `path-to-file-1`
+- [ ] `path-to-file-2`
+- [ ] ...
+Fichier PDF : Le PDF complet du livre est disponible dans les *Artifacts* de la PR associée.
+PR associée : [lien vers la PR]
+
+## Points à corriger
+- [ ] Cohérence des notations avec le reste du livre.
+- [ ] Exactitude des démonstrations et des résultats.
+- [ ] Clarté des explications et des exemples.
+- [ ] Correction des fautes de français et de typographie.
+- [ ] Vérification des références croisées.
+- [ ] Suggestions bibliographiques.
+
+## Contexte
+[Décris les points spécifiques à corriger.]
+
+## Échéance
+Milestone : [lien vers le milestone]
+Date limite : [date]
+Assigné à : [@relecteur1, @relecteur2, ...]
+EOF
+
+# 17. Premier Commit
 git add .
 git commit -m "Initialisation de la structure projet"
 

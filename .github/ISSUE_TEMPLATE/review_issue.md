@@ -1,13 +1,16 @@
 ---
-name: Relecture de l'introduction, d'un chapitre, d'une annexe ou tout autre section du livre.
-about: Utilise ce template pour demander une relecture de l'introduction, d'un chapitre, d'une annexe ou tout autre section du livre.
-title: "[Relecture] [Intro|Chapitre|Annexe|Section][/nom de la section]"
-labels: ["relecture", "[intro|chapter|appendix|section][-nom_court_de_section]", "[haute|moyenne|faible]-priorite"]
+name: Relecture d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+about: Utilise ce template pour demander une relecture d'une ou plusieurs sections du livre (introduction, chapitre, annexe, bibliographie, section ou sous-section).
+title: "[Relecture] [nom(s) de(s) section(s)]"
+labels: ["relecture", "[nom_court_de_release]", "[nom_court_de_feature]", "[haute|moyenne|faible]-priorite"]
 ---
 
 ## Description
-Section à relire : [nom de la section]
-Fichier LaTeX : `path-to-file.tex`
+Sections à relire : [nom(s) de(s) section(s)]
+Fichiers LaTeX : 
+- [ ] `path-to-file-1`
+- [ ] `path-to-file-2`
+- [ ] ...
 Fichier PDF : Le PDF complet du livre est disponible dans les *Artifacts* de la PR associée.
 PR associée : [lien vers la PR]
 

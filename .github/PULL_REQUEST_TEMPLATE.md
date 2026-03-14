@@ -1,8 +1,8 @@
 ---
 name: Rajouter une fonctionnalité par la validation d'étapes de rédaction, de relecture et/ou de correction.
 about: Utilisez ce template pour documenter le rajout d'une fonctionnalité.
-title: "[Feature] [nom de la feature]"
-labels: ["[nom_court_de_feature]", "[haute|moyenne|faible]-priorite"]
+title: "[nom de la feature]"
+labels: ["[nom_court_de_release]", "[haute|moyenne|faible]-priorite"]
 ---
 
 ## Description
