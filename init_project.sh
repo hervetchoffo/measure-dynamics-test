@@ -847,7 +847,134 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
 EOF
 
-# 16. Premier Commit
+# 16. Création des templates GitHub
+# 16.1. Génération du fichier writing_issue.md
+echo "📝 Génération du template de rédaction ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/writing_issue.md
+---
+name: Rédaction de sections du livre
+about: Demande la rédaction d'une ou plusieurs sections (introduction, chapitre, annexe, bibliographie, section ou sous-section)
+title: "[Rédaction] [nom des sections à rédiger]"
+labels: ["redaction"]
+---
+
+## Description
+**Sections à rédiger** : [nom des sections à rédiger]
+
+**Fichiers LaTeX concernés** :
+- [ ] `path/to/file1.tex`
+- [ ] `path/to/file2.tex`
+- [ ] ...
+
+## Objectifs
+- [ ] Rédiger l'introduction et les objectifs
+- [ ] Développer le contenu mathématique
+- [ ] Ajouter exemples et démonstrations
+- [ ] Inclure exercices ou applications
+
+## Contexte
+[Décris brièvement le contenu attendu en t'appuyant sur la table des matières.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Feature : `[nom_court_de_feature]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 15.2. Génération du fichier review_issue.md
+echo "📝 Génération du template de relecture ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/review_issue.md
+---
+name: Relecture de sections du livre
+about: Demande la relecture d'une ou plusieurs sections (introduction, chapitre, annexe, bibliographie, section ou sous-section)
+title: "[Relecture] [nom des sections à relire]"
+labels: ["relecture"]
+---
+
+## Description
+**Sections à relire** : [nom des sections à relire]
+
+**Fichiers LaTeX concernés** :
+- [ ] `path/to/file1.tex`
+- [ ] `path/to/file2.tex`
+- [ ] ...
+
+**Fichier PDF** : Le PDF complet du livre est disponible dans les *Artifacts* de la PR associée.
+
+**PR associée** : [lien vers la PR]
+
+## Points à vérifier
+- [ ] Cohérence des notations avec le reste du livre
+- [ ] Exactitude des démonstrations et des résultats
+- [ ] Clarté des explications et des exemples
+- [ ] Correction des fautes de français et de typographie
+- [ ] Vérification des références croisées
+- [ ] Suggestions bibliographiques
+
+## Contexte
+[Décris les points spécifiques à vérifier ou les questions ouvertes.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Feature : `[nom_court_de_feature]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 15.3. Génération du fichier correction_issue.md
+echo "📝 Génération du template de correction ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/correction_issue.md
+---
+name: Correction de sections du livre
+about: Demande la correction d'une ou plusieurs sections (introduction, chapitre, annexe, bibliographie, section ou sous-section)
+title: "[Correction] [nom de la correction]/[nom des sections à corriger]"
+labels: ["correction"]
+---
+
+## Description
+**Sections à corriger** : [nom des sections à corriger]
+
+**Fichiers LaTeX concernés** :
+- [ ] `path/to/file1.tex`
+- [ ] `path/to/file2.tex`
+- [ ] ...
+
+**Fichier PDF** : Le PDF complet du livre est disponible dans les *Artifacts* de la PR associée.
+
+**PR associée** : [lien vers la PR]
+
+## Points à corriger
+- [ ] Notations
+- [ ] Démonstrations et résultats
+- [ ] Explications et exemples
+- [ ] Fautes de français et typographie
+- [ ] Références croisées
+- [ ] Bibliographie
+
+## Contexte
+[Décris les points spécifiques à corriger.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Feature : `[nom_court_de_feature]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 17. Premier Commit
 git add .
 git commit -m "Initialisation de la structure projet"
 
