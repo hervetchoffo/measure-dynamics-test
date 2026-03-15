@@ -1,8 +1,7 @@
 ---
-name: Rajouter un jalon pour la livraison d'une release.
-about: Utilisez ce template pour documenter le jalon d'une release.
+name: Rajouter un jalon pour la livraison d'une release
+about: Demande la documentation d'une release
 title: "[TAG NAME] ([nom de la release])"
-labels: ["[alpha|beta|rc|final]", "[haute|moyenne|faible]-priorite"]
 ---
 
 ## Objectifs
@@ -26,5 +25,8 @@ labels: ["[alpha|beta|rc|final]", "[haute|moyenne|faible]-priorite"]
 ....
 
 ## Échéance
-Date limite : [date]
+**Date limite** : [JJ/MM/AAAA]
 
+## Labels à ajouter manuellement après création
+- Type : `alpha` | `beta` | `rc` | `final`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
