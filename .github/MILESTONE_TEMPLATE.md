@@ -7,10 +7,12 @@ title: "[TAG NAME] ([nom de la release])"
 ## Objectifs
 - [ ] Objectif 1
 - [ ] Objectif 2
+- [ ] ...
 
 ## Critères de validation
 - [ ] Critère 1
 - [ ] Critère 2
+- [ ] ...
 
 ## Issues/PRs liées
 - [ ] [lien vers PR ou ISSUE]
@@ -18,11 +20,12 @@ title: "[TAG NAME] ([nom de la release])"
 
 ## Changelog
 **Type de milestone** : [Alpha|Bêta|RC|Finale]
+
 **Notes de release** : 
   ### Nouveautés et améliorations principales
 - [Résumé fonctionnalité #1]
 - [Résumé fonctionnalité #2]
-....
+- ...
 
 ## Échéance
 **Date limite** : [JJ/MM/AAAA]
