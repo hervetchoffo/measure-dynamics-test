@@ -974,6 +974,87 @@ labels: ["correction"]
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
+# 15.4. Génération du fichier PULL_REQUEST_TEMPLATE.md
+echo "📝 Génération du template PR ..."
+cat <<'EOF' > .github/PULL_REQUEST_TEMPLATE.md
+---
+name: Rajouter une fonctionnalité par la validation d'étapes de rédaction, de relecture et/ou de correction.
+about: Utilisez ce template pour documenter le rajout d'une fonctionnalité.
+title: "[nom de la feature]"
+---
+
+## Description
+Ce PR [ajoute/corrige] [décris brièvement les modifications].
+
+## Issues associées
+- [ ] Fixes #
+- [ ] ...
+
+## Types de modifications
+- [ ] Rédaction initiale
+- [ ] Correction de contenu
+- [ ] Correction de typographie
+- [ ] Ajout d'exemples ou d'exercices
+
+## Checklist pour les relecteurs
+- [ ] Vérifier la cohérence des notations.
+- [ ] Valider les démonstrations et les résultats.
+- [ ] Corriger les fautes de français.
+- [ ] Vérifier la compilation LaTeX.
+
+## Contexte supplémentaire
+[Ajoute du contexte utile pour les relecteurs et explique pourquoi ces changements sont nécessaires.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 15.5. Génération du fichier MILESTONE_TEMPLATE.md
+echo "📝 Génération du template milestone ..."
+cat <<'EOF' > .github/MILESTONE_TEMPLATE.md
+---
+name: Rajouter un jalon pour la livraison d'une release
+about: Demande la documentation d'une release
+title: "[TAG NAME] ([nom de la release])"
+---
+
+## Objectifs
+- [ ] Objectif 1
+- [ ] Objectif 2
+- [ ] ...
+
+## Critères de validation
+- [ ] Critère 1
+- [ ] Critère 2
+- [ ] ...
+
+## Issues/PRs liées
+- [ ] [lien vers PR ou ISSUE]
+- [ ] ...
+
+## Changelog
+**Type de milestone** : [Alpha|Bêta|RC|Finale]
+
+**Notes de release** : 
+  ### Nouveautés et améliorations principales
+- [Résumé fonctionnalité #1]
+- [Résumé fonctionnalité #2]
+- ...
+
+## Échéance
+**Date limite** : [JJ/MM/AAAA]
+
+## Labels à ajouter manuellement après création
+- Type : `alpha` | `beta` | `rc` | `final`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
 # 17. Premier Commit
 git add .
 git commit -m "Initialisation de la structure projet"
