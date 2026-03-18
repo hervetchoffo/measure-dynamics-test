@@ -23,8 +23,8 @@ title: "[TAG NAME] ([nom de la release])"
 
 **Notes de release** : 
   ### Nouveautés et améliorations principales
-- [Résumé fonctionnalité #1]
-- [Résumé fonctionnalité #2]
+- [Résumé fonctionnalité 1]
+- [Résumé fonctionnalité 2]
 - ...
 
 ## Échéance

@@ -847,6 +847,81 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
 EOF
 
+# 15.4. Génération du fichier auto-close-issues.yml
+echo "📝 Génération du workflow Close issues automatically on PR merge..."
+cat <<'EOF' > .github/workflows/auto-close-issues.yml
+name: Close issues automatically on PR merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  close-issues:
+    # Ce job ne s'exécute que si la PR a été mergée (et non simplement fermée)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fermer les issues liées et ajouter un commentaire
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Récupération du texte complet de la description de la PR
+            const body = context.payload.pull_request.body || '';
+            const prNumber = context.payload.pull_request.number;
+
+            // Regex ultra complète avec \b (limite de mot) pour éviter les faux positifs
+            // Reconnaît : fix, fixes, fixed, close, closes, closed, resolve, resolves, resolved
+            const regex = /\b(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\b\s+#(\d+)/gi;
+
+            let match;
+            const issuesToClose = new Set();
+
+            // Recherche tous les numéros d'issue
+            while ((match = regex.exec(body)) !== null) {
+              // match[1] contient le numéro capturé grâce aux parenthèses (\d+)
+              issuesToClose.add(match[1]);
+            }
+
+            if (issuesToClose.size === 0) {
+              console.log("Aucun mot-clé (Fixes/Closes/Resolves) trouvé.");
+              return;
+            }
+
+            console.log(`🔍 ${issuesToClose.size} issue(s) détectée(s) : #${Array.from(issuesToClose).join(', #')}`);
+
+            // Pour chaque issue trouvée
+            for (const issueNumber of issuesToClose) {
+              try {
+                const issueNum = parseInt(issueNumber);
+
+                // 1. Fermeture de l'issue
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum,
+                  state: 'closed',
+                  state_reason: 'completed'
+                });
+
+                // 2. Ajout du commentaire simple : "Fermée par la PR #XX"
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum,
+                  body: `Fermée par la PR #${prNumber}`
+                });
+
+                console.log(`✅ Issue #${issueNum} fermée + commentaire ajouté.`);
+
+              } catch (error) {
+                console.error(`❌ Erreur avec l'issue #${issueNumber} :`, error.message);
+              }
+            }
+EOF
+
 # 16. Création des templates GitHub
 # 16.1. Génération du fichier writing_issue.md
 echo "📝 Génération du template de rédaction ..."
@@ -990,7 +1065,27 @@ Ce PR [ajoute/corrige] [décris brièvement les modifications].
 - [ ] Fixes #
 - [ ] ...
 
-## Types de modifications
+## Types de modifications## Description
+Template à rédiger : template utile pour la publication d'une version de l'ouvrage `measure-dynamics-book`.
+Fichier MARKDOWN : `.github/MILESTONE_TEMPLATE.md`
+
+## Objectifs
+- [ ] Compléter le template `milestone` afin de documenter la publication d'une version de l'ouvrage.
+
+## Contexte
+Cette documentation doit être écrite au format `markdown` et faite dans la section `Changelog` du `milestone` comme suit:
+**Type de milestone** : [Alpha|Bêta|RC|Finale]
+
+**Notes de release** : 
+  ### Nouveautés et améliorations principales
+- [Résumé fonctionnalité 1]
+- [Résumé fonctionnalité 2]
+- ...
+
+## Échéance
+Milestone : [templates](https://github.com/hervetchoffo/measure-dynamics-test/milestone/2)
+Date limite : 2026-03-18
+Assigné à : @hervetchoffo 
 - [ ] Rédaction initiale
 - [ ] Correction de contenu
 - [ ] Correction de typographie
