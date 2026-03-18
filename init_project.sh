@@ -1065,7 +1065,27 @@ Ce PR [ajoute/corrige] [décris brièvement les modifications].
 - [ ] Fixes #
 - [ ] ...
 
-## Types de modifications
+## Types de modifications## Description
+Template à rédiger : template utile pour la publication d'une version de l'ouvrage `measure-dynamics-book`.
+Fichier MARKDOWN : `.github/MILESTONE_TEMPLATE.md`
+
+## Objectifs
+- [ ] Compléter le template `milestone` afin de documenter la publication d'une version de l'ouvrage.
+
+## Contexte
+Cette documentation doit être écrite au format `markdown` et faite dans la section `Changelog` du `milestone` comme suit:
+**Type de milestone** : [Alpha|Bêta|RC|Finale]
+
+**Notes de release** : 
+  ### Nouveautés et améliorations principales
+- [Résumé fonctionnalité 1]
+- [Résumé fonctionnalité 2]
+- ...
+
+## Échéance
+Milestone : [templates](https://github.com/hervetchoffo/measure-dynamics-test/milestone/2)
+Date limite : 2026-03-18
+Assigné à : @hervetchoffo 
 - [ ] Rédaction initiale
 - [ ] Correction de contenu
 - [ ] Correction de typographie
