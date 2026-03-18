@@ -1,5 +1,8 @@
 name: Close issues automatically on PR merge
 
+permissions:
+  issues: write
+
 on:
   pull_request:
     types: [closed]

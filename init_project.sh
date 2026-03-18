@@ -852,6 +852,9 @@ echo "📝 Génération du workflow Close issues automatically on PR merge..."
 cat <<'EOF' > .github/workflows/auto-close-issues.yml
 name: Close issues automatically on PR merge
 
+permissions:
+  issues: write
+
 on:
   pull_request:
     types: [closed]
