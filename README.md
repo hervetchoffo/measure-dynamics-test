@@ -6,7 +6,7 @@ avec des applications en théorie des nombres et en théorie de l'information.
 [![License (code)](https://img.shields.io/badge/license_code-MIT-blue.svg)](LICENSE)
 [![License (book)](https://img.shields.io/badge/license_book-CC_BY--SA_4.0-green.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![Dernier commit](https://img.shields.io/github/last-commit/hervetchoffo/measure-dynamics-test)](https://github.com/hervetchoffo/measure-dynamics-test/commits/main)
-[![Build Status](https://github.com/hervetchoffo/measure-dynamics-test/actions/workflows/build-release.yml/badge.svg)](https://github.com/hervetchoffo/measure-dynamics-test/actions)
+[![Build Status](https://github.com/hervetchoffo/measure-dynamics-test/actions/workflows/build-release.yml/badge.svg)](https://github.com/hervetchoffo/measure-dynamics-test/releases)
 
 ---
 
