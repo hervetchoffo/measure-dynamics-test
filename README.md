@@ -11,13 +11,13 @@ avec des applications en théorie des nombres et en théorie de l'information.
 ---
 
 ## 📖 Table des matières
-- [À propos du projet](#a-propos-du-projet)
+- [À propos du projet](#à-propos-du-projet)
 - [Philosophie du projet](#philosophie-du-projet)
 - [Installation et compilation](#installation-et-compilation)
-- [Structure du dépôt](#structure-du-depot)
+- [Structure du dépôt](#structure-du-dépôt)
 - [Templates disponibles](#templates-disponibles)
 - [Comment contribuer](#comment-contribuer)
-- [Roadmap & statut éditorial](#roadmap--statut-editorial)
+- [Roadmap & statut éditorial](#roadmap--statut-éditorial)
 - [Licence](#licence)
 - [Contact & discussions](#contact--discussions)
 
