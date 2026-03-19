@@ -23,7 +23,7 @@ avec des applications en théorie des nombres et en théorie de l'information.
 
 ---
 
-## 📝 À propos du projet {#a-propos-du-projet}
+## 📝 À propos du projet
 Ce dépôt contient les sources LaTeX complètes d’un livre collaboratif sur la **théorie de la mesure orientée vers les systèmes dynamiques, la théorie ergodique et ses applications**.
 
 **Source of truth** : GitHub.
@@ -31,7 +31,7 @@ Le projet suit une édition incrémentale inspirée des pratiques CI/CD.
 
 ---
 
-## 🧠 Philosophie du projet {#philosophie-du-projet}
+## 🧠 Philosophie du projet
 - Édition incrémentale et modulaire
 - Compilation automatique à chaque modification
 - Modularité maximale (préambule centralisé, code LaTeX décomposé en sections et/ou sous-sections)
@@ -39,7 +39,7 @@ Le projet suit une édition incrémentale inspirée des pratiques CI/CD.
 
 ---
 
-## 🚀 Installation et compilation {#installation-et-compilation}
+## 🚀 Installation et compilation
 
 ### Compilation locale
 ```bash
@@ -60,7 +60,7 @@ Le PDF final est généré dans `main.pdf`.
 
 ---
 
-## 📁 Structure du dépôt {#structure-du-depot}
+## 📁 Structure du dépôt
 ```bash
 measure-dynamics-test/
 ├── main.tex                      # Point d’entrée du document
@@ -79,7 +79,7 @@ measure-dynamics-test/
 
 ---
 
-## 📋 Templates disponibles {#templates-disponibles}
+## 📋 Templates disponibles
 Pour faciliter la collaboration, nous utilisons des templates structurés :
 
 - **Rédaction, relecture et correction des sections** → formulaires avec priorité, feature & release
@@ -93,7 +93,7 @@ Pour faciliter la collaboration, nous utilisons des templates structurés :
 
 ---
 
-## 👥 Comment contribuer {#comment-contribuer}
+## 👥 Comment contribuer
 1. Choisis une issue de rédaction
 2. Crée une branche `feature/nom-de-la-section`
 3. Rédige → commit → ouvre une PR avec `Fixes #XX`
@@ -103,20 +103,20 @@ Consulte le fichier **[CONTRIBUTING.md](CONTRIBUTING.md)** pour les règles dét
 
 ---
 
-## 🗺️ Roadmap & statut éditorial {#roadmap--statut-editorial}
+## 🗺️ Roadmap & statut éditorial
 Le suivi complet est disponible dans :
 - Le dossier [`site/`](site/)
 - Les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-test/milestones)**
 
 ---
 
-## 📜 Licence {#licence}
+## 📜 Licence
 - **Code source LaTeX + templates** : licence **MIT** (voir [LICENSE](LICENSE))
 - **Livre compilé (PDF)** : licence **Creative Commons CC BY-SA 4.0** (attribution obligatoire)
 
 ---
 
-## 📬 Contact & discussions {#contact--discussions}
+## 📬 Contact & discussions
 - **Discussions GitHub** (recommandé pour toutes les questions)
 - Ouvert à toute proposition d’amélioration ou de co-auteur
 
