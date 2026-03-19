@@ -17,7 +17,7 @@ avec des applications en théorie des nombres et en théorie de l'information.
 - [Structure du dépôt](#-structure-du-dépôt)
 - [Templates disponibles](#-templates-disponibles)
 - [Comment contribuer](#-comment-contribuer)
-- [Roadmap & statut éditorial](#-roadmap--statut-éditorial)
+- [Roadmap & statut éditorial](#%EF%B8%8F-roadmap--statut-éditorial)
 - [Licence](#-licence)
 - [Contact & discussions](#-contact--discussions)
 
