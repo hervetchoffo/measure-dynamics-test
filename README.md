@@ -11,19 +11,19 @@ avec des applications en théorie des nombres et en théorie de l'information.
 ---
 
 ## 📖 Table des matières
-- [À propos du projet](#à-propos-du-projet)
+- [À propos du projet](#a-propos-du-projet)
 - [Philosophie du projet](#philosophie-du-projet)
 - [Installation et compilation](#installation-et-compilation)
-- [Structure du dépôt](#structure-du-dépôt)
+- [Structure du dépôt](#structure-du-depot)
 - [Templates disponibles](#templates-disponibles)
 - [Comment contribuer](#comment-contribuer)
-- [Roadmap & statut éditorial](#roadmap--statut-éditorial)
+- [Roadmap & statut éditorial](#roadmap--statut-editorial)
 - [Licence](#licence)
 - [Contact & discussions](#contact--discussions)
 
 ---
 
-## 📝 À propos du projet
+## 📝 À propos du projet {#a-propos-du-projet}
 Ce dépôt contient les sources LaTeX complètes d’un livre collaboratif sur la **théorie de la mesure orientée vers les systèmes dynamiques, la théorie ergodique et ses applications**.
 
 **Source of truth** : GitHub.
@@ -31,7 +31,7 @@ Le projet suit une édition incrémentale inspirée des pratiques CI/CD.
 
 ---
 
-## 🧠 Philosophie du projet
+## 🧠 Philosophie du projet {#philosophie-du-projet}
 - Édition incrémentale et modulaire
 - Compilation automatique à chaque modification
 - Modularité maximale (préambule centralisé, code LaTeX décomposé en sections et/ou sous-sections)
@@ -39,7 +39,7 @@ Le projet suit une édition incrémentale inspirée des pratiques CI/CD.
 
 ---
 
-## 🚀 Installation et compilation
+## 🚀 Installation et compilation {#installation-et-compilation}
 
 ### Compilation locale
 ```bash
@@ -60,7 +60,7 @@ Le PDF final est généré dans `main.pdf`.
 
 ---
 
-## 📁 Structure du dépôt
+## 📁 Structure du dépôt {#structure-du-depot}
 ```bash
 measure-dynamics-test/
 ├── main.tex                      # Point d’entrée du document
@@ -79,7 +79,7 @@ measure-dynamics-test/
 
 ---
 
-## 📋 Templates disponibles
+## 📋 Templates disponibles {#templates-disponibles}
 Pour faciliter la collaboration, nous utilisons des templates structurés :
 
 - **Rédaction, relecture et correction des sections** → formulaires avec priorité, feature & release
@@ -93,7 +93,7 @@ Pour faciliter la collaboration, nous utilisons des templates structurés :
 
 ---
 
-## 👥 Comment contribuer
+## 👥 Comment contribuer {#comment-contribuer}
 1. Choisis une issue de rédaction
 2. Crée une branche `feature/nom-de-la-section`
 3. Rédige → commit → ouvre une PR avec `Fixes #XX`
@@ -103,20 +103,20 @@ Consulte le fichier **[CONTRIBUTING.md](CONTRIBUTING.md)** pour les règles dét
 
 ---
 
-## 🗺️ Roadmap & statut éditorial
+## 🗺️ Roadmap & statut éditorial {#roadmap--statut-editorial}
 Le suivi complet est disponible dans :
 - Le dossier [`site/`](site/)
 - Les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-test/milestones)**
 
 ---
 
-## 📜 Licence
+## 📜 Licence {#licence}
 - **Code source LaTeX + templates** : licence **MIT** (voir [LICENSE](LICENSE))
 - **Livre compilé (PDF)** : licence **Creative Commons CC BY-SA 4.0** (attribution obligatoire)
 
 ---
 
-## 📬 Contact & discussions
+## 📬 Contact & discussions {#contact--discussions}
 - **Discussions GitHub** (recommandé pour toutes les questions)
 - Ouvert à toute proposition d’amélioration ou de co-auteur
 
