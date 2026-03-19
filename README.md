@@ -34,7 +34,7 @@ Le projet suit une édition incrémentale inspirée des pratiques CI/CD.
 ## 🧠 Philosophie du projet
 - Édition incrémentale et modulaire
 - Compilation automatique à chaque modification
-- Modularité maximale (préambule centralisé, code LaTeX décomposé)
+- Modularité maximale (préambule centralisé, code LaTeX décomposé en sections et/ou sous-sections)
 - Collaboration facilitée grâce aux templates d’issues, de PRs et de milestones
 
 ---
@@ -67,7 +67,7 @@ measure-dynamics-test/
 ├── preamble/                     # Macros, packages, styles et mise en page (centralisés)
 ├── frontmatter/                  # Page de titre, introduction, etc.
 ├── chapters/                     # Contenu scientifique (un fichier par chapitre ou section)
-├── appendices/                   # Annexes (un fichier par annexe)
+├── appendices/                   # Annexes (un fichier par annexe ou section)
 ├── bibliography/                 # Fichiers .bib
 ├── site/                         # Feuille de route, statut éditorial, historique des versions
 └── .github/
@@ -112,7 +112,7 @@ Le suivi complet est disponible dans :
 
 ## 📜 Licence
 - **Code source LaTeX + templates** : licence **MIT** (voir [LICENSE](LICENSE))
-- **Livre compilé (PDF)** : licence **Creative Commons CC BY 4.0** (attribution obligatoire)
+- **Livre compilé (PDF)** : licence **Creative Commons CC BY-SA 4.0** (attribution obligatoire)
 
 ---
 
