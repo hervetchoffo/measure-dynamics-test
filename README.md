@@ -112,7 +112,7 @@ Le suivi complet est disponible dans :
 
 ## 📜 Licence
 - **Code source LaTeX + templates** : licence **MIT** (voir [LICENSE](LICENSE))
-- **Livre compilé (PDF)** : licence **Creative Commons CC BY-SA 4.0** (attribution obligatoire)
+- **Livre compilé (PDF)** : licence **Creative Commons CC BY-SA 4.0** (voir [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/))
 
 ---
 
