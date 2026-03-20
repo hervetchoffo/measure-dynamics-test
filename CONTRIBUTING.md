@@ -60,7 +60,7 @@ docs: mise à jour du README
 chore: mise à jour du template
 ```
 
-## Pull Requests
+### Pull Requests
 - Titre clair : `[Rédaction] Section 3.2 – Théorème ergodique`
 - Description remplie avec le template
 - Doit contenir `Fixes #XX` ou `Closes #XX`
