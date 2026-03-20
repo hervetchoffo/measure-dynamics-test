@@ -1121,8 +1121,8 @@ title: "[TAG NAME] ([nom de la release])"
 
 **Notes de release** : 
   ### Nouveautés et améliorations principales
-- [Résumé fonctionnalité #1]
-- [Résumé fonctionnalité #2]
+- [Résumé fonctionnalité 1]
+- [Résumé fonctionnalité 2]
 - ...
 
 ## Échéance
@@ -1252,7 +1252,7 @@ Le suivi complet est disponible dans :
 - **Code source LaTeX + templates** : licence **MIT** (voir [LICENSE](LICENSE))
 - **Livre compilé (PDF)** : licence **Creative Commons CC BY-SA 4.0** (voir [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/))
 
----
+---?tab=readme-ov-file#-contact--discussions
 
 ## 📬 Contact & discussions
 - **Discussions GitHub** (recommandé pour toutes les questions)
