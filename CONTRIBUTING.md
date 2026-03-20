@@ -5,13 +5,13 @@ Ce document explique comment participer efficacement au projet.
 
 ---
 ## 📋 Sommaire
-- [Avant de commencer](#avant-de-commencer)
-- [Utiliser les templates](#utiliser-les-templates)
-- [Processus de contribution](#processus-de-contribution)
-- [Conventions de nommage](#conventions-de-nommage)
-- [Règles LaTeX](#règles-latex)
-- [Relecture et validation](#relecture-et-validation)
-- [Licence](#licence)
+- [Avant de commencer](#-avant-de-commencer)
+- [Utiliser les templates](#%EF%B8%8F-utiliser-les-templates)
+- [Processus de contribution](#-processus-de-contribution)
+- [Conventions de nommage](#-conventions-de-nommage)
+- [Règles LaTeX](#-règles-latex)
+- [Relecture et validation](#-relecture-et-validation)
+- [Licence](#-licence)
 
 ---
 ## 📝 Avant de commencer
