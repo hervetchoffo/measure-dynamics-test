@@ -847,7 +847,528 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
 EOF
 
-# 16. Premier Commit
+# 15.4. Génération du fichier auto-close-issues.yml
+echo "📝 Génération du workflow Close issues automatically on PR merge..."
+cat <<'EOF' > .github/workflows/auto-close-issues.yml
+name: Close issues automatically on PR merge
+
+permissions:
+  issues: write
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  close-issues:
+    # Ce job ne s'exécute que si la PR a été mergée (et non simplement fermée)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fermer les issues liées et ajouter un commentaire
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Récupération du texte complet de la description de la PR
+            const body = context.payload.pull_request.body || '';
+            const prNumber = context.payload.pull_request.number;
+
+            // Regex ultra complète avec \b (limite de mot) pour éviter les faux positifs
+            // Reconnaît : fix, fixes, fixed, close, closes, closed, resolve, resolves, resolved
+            const regex = /\b(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\b\s+#(\d+)/gi;
+
+            let match;
+            const issuesToClose = new Set();
+
+            // Recherche tous les numéros d'issue
+            while ((match = regex.exec(body)) !== null) {
+              // match[1] contient le numéro capturé grâce aux parenthèses (\d+)
+              issuesToClose.add(match[1]);
+            }
+
+            if (issuesToClose.size === 0) {
+              console.log("Aucun mot-clé (Fixes/Closes/Resolves) trouvé.");
+              return;
+            }
+
+            console.log(`🔍 ${issuesToClose.size} issue(s) détectée(s) : #${Array.from(issuesToClose).join(', #')}`);
+
+            // Pour chaque issue trouvée
+            for (const issueNumber of issuesToClose) {
+              try {
+                const issueNum = parseInt(issueNumber);
+
+                // 1. Fermeture de l'issue
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum,
+                  state: 'closed',
+                  state_reason: 'completed'
+                });
+
+                // 2. Ajout du commentaire simple : "Fermée par la PR #XX"
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum,
+                  body: `Fermée par la PR #${prNumber}`
+                });
+
+                console.log(`✅ Issue #${issueNum} fermée + commentaire ajouté.`);
+
+              } catch (error) {
+                console.error(`❌ Erreur avec l'issue #${issueNumber} :`, error.message);
+              }
+            }
+EOF
+
+# 16. Création des templates GitHub
+# 16.1. Génération du fichier writing_issue.md
+echo "📝 Génération du template de rédaction ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/writing_issue.md
+---
+name: Rédaction de sections du livre
+about: Demande la rédaction d'une ou plusieurs sections (introduction, chapitre, annexe, bibliographie, section ou sous-section)
+title: "[Rédaction] [nom des sections à rédiger]"
+labels: ["redaction"]
+---
+
+## Description
+**Sections à rédiger** : [nom des sections à rédiger]
+
+**Fichiers LaTeX concernés** :
+- [ ] `path/to/file1.tex`
+- [ ] `path/to/file2.tex`
+- [ ] ...
+
+## Objectifs
+- [ ] Rédiger l'introduction et les objectifs
+- [ ] Développer le contenu mathématique
+- [ ] Ajouter exemples et démonstrations
+- [ ] Inclure exercices ou applications
+
+## Contexte
+[Décris brièvement le contenu attendu en t'appuyant sur la table des matières.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Feature : `[nom_court_de_feature]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 16.2. Génération du fichier review_issue.md
+echo "📝 Génération du template de relecture ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/review_issue.md
+---
+name: Relecture de sections du livre
+about: Demande la relecture d'une ou plusieurs sections (introduction, chapitre, annexe, bibliographie, section ou sous-section)
+title: "[Relecture] [nom des sections à relire]"
+labels: ["relecture"]
+---
+
+## Description
+**Sections à relire** : [nom des sections à relire]
+
+**Fichiers LaTeX concernés** :
+- [ ] `path/to/file1.tex`
+- [ ] `path/to/file2.tex`
+- [ ] ...
+
+**Fichier PDF** : Le PDF complet du livre est disponible dans les *Artifacts* de la PR associée.
+
+**PR associée** : [lien vers la PR]
+
+## Points à vérifier
+- [ ] Cohérence des notations avec le reste du livre
+- [ ] Exactitude des démonstrations et des résultats
+- [ ] Clarté des explications et des exemples
+- [ ] Correction des fautes de français et de typographie
+- [ ] Vérification des références croisées
+- [ ] Suggestions bibliographiques
+
+## Contexte
+[Décris les points spécifiques à vérifier ou les questions ouvertes.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Feature : `[nom_court_de_feature]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 16.3. Génération du fichier correction_issue.md
+echo "📝 Génération du template de correction ..."
+cat <<'EOF' > .github/ISSUE_TEMPLATE/correction_issue.md
+---
+name: Correction de sections du livre
+about: Demande la correction d'une ou plusieurs sections (introduction, chapitre, annexe, bibliographie, section ou sous-section)
+title: "[Correction] [nom de la correction]/[nom des sections à corriger]"
+labels: ["correction"]
+---
+
+## Description
+**Sections à corriger** : [nom des sections à corriger]
+
+**Fichiers LaTeX concernés** :
+- [ ] `path/to/file1.tex`
+- [ ] `path/to/file2.tex`
+- [ ] ...
+
+**Fichier PDF** : Le PDF complet du livre est disponible dans les *Artifacts* de la PR associée.
+
+**PR associée** : [lien vers la PR]
+
+## Points à corriger
+- [ ] Notations
+- [ ] Démonstrations et résultats
+- [ ] Explications et exemples
+- [ ] Fautes de français et typographie
+- [ ] Références croisées
+- [ ] Bibliographie
+
+## Contexte
+[Décris les points spécifiques à corriger.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Feature : `[nom_court_de_feature]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 16.4. Génération du fichier PULL_REQUEST_TEMPLATE.md
+echo "📝 Génération du template PR ..."
+cat <<'EOF' > .github/PULL_REQUEST_TEMPLATE.md
+---
+name: Rajouter une fonctionnalité par la validation d'étapes de rédaction, de relecture et/ou de correction.
+about: Utilisez ce template pour documenter le rajout d'une fonctionnalité.
+title: "[nom de la feature]"
+---
+
+## Description
+Ce PR [ajoute/corrige] [décris brièvement les modifications].
+
+## Issues associées
+- [ ] Fixes #
+- [ ] ...
+
+## Types de modifications
+- [ ] Rédaction initiale
+- [ ] Correction de contenu
+- [ ] Correction de typographie
+- [ ] Ajout d'exemples ou d'exercices
+
+## Checklist pour les relecteurs
+- [ ] Vérifier la cohérence des notations.
+- [ ] Valider les démonstrations et les résultats.
+- [ ] Corriger les fautes de français.
+- [ ] Vérifier la compilation LaTeX.
+
+## Contexte supplémentaire
+[Ajoute du contexte utile pour les relecteurs et explique pourquoi ces changements sont nécessaires.]
+
+## Échéance
+- **Milestone** : [lien vers le milestone]
+- **Date limite** : [JJ/MM/AAAA]
+- **Assignés** : @relecteur1, @relecteur2, ...
+
+## Labels à ajouter manuellement après création
+- Release : `[nom_court_de_release]`
+- Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
+EOF
+
+# 16.5. Génération du fichier MILESTONE_TEMPLATE.md
+echo "📝 Génération du template milestone ..."
+cat <<'EOF' > .github/MILESTONE_TEMPLATE.md
+---
+name: Rajouter un jalon pour la livraison d'une release
+about: Demande la documentation d'une release
+title: "[TAG NAME] ([nom de la release])"
+---
+
+## Objectifs
+- [ ] Objectif 1
+- [ ] Objectif 2
+- [ ] ...
+
+---
+## Critères de validation
+- [ ] Critère 1
+- [ ] Critère 2
+- [ ] ...
+
+---
+## Issues & PRs liées
+- [ ] [lien vers PR ou ISSUE]
+- [ ] ...
+
+---
+## Notes de release
+  ### Nouveautés et améliorations principales
+- [Résumé fonctionnalité 1]
+- [Résumé fonctionnalité 2]
+- ...
+
+---
+## Échéance
+**Date limite** : [JJ/MM/AAAA]
+EOF
+
+# 16.6. Génération du fichier README.md
+echo "📝 Génération du fichier README ..."
+cat <<'EOF' > .github/README.md
+# 📘 Théorie de la mesure et systèmes dynamiques
+
+**Un ouvrage de référence sur la théorie de la mesure, les systèmes dynamiques et la théorie ergodique**
+avec des applications en théorie des nombres et en théorie de l'information.
+
+[![License (code)](https://img.shields.io/badge/license_code-MIT-blue.svg)](LICENSE)
+[![License (book)](https://img.shields.io/badge/license_book-CC_BY--SA_4.0-green.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+[![Dernier commit](https://img.shields.io/github/last-commit/hervetchoffo/measure-dynamics-book)](https://github.com/hervetchoffo/measure-dynamics-book/commits/main)
+[![Build Status](https://github.com/hervetchoffo/measure-dynamics-book/actions/workflows/build-release.yml/badge.svg)](https://github.com/hervetchoffo/measure-dynamics-book/releases)
+
+---
+
+## 📖 Table des matières
+- [À propos du projet](#-à-propos-du-projet)
+- [Philosophie du projet](#-philosophie-du-projet)
+- [Installation et compilation](#-installation-et-compilation)
+- [Structure du dépôt](#-structure-du-dépôt)
+- [Templates disponibles](#-templates-disponibles)
+- [Comment contribuer](#-comment-contribuer)
+- [Roadmap & statut éditorial](#%EF%B8%8F-roadmap--statut-éditorial)
+- [Licence](#-licence)
+- [Contact & discussions](#-contact--discussions)
+
+---
+
+## 📝 À propos du projet
+Ce dépôt contient les sources LaTeX complètes d’un livre collaboratif sur la **théorie de la mesure orientée vers les systèmes dynamiques, la théorie ergodique et ses applications**.
+
+**Source of truth** : GitHub.
+Le projet suit une édition incrémentale inspirée des pratiques CI/CD.
+
+---
+
+## 🧠 Philosophie du projet
+- Édition incrémentale et modulaire
+- Compilation automatique à chaque modification
+- Modularité maximale (préambule centralisé, code LaTeX décomposé en sections et/ou sous-sections)
+- Collaboration facilitée grâce aux templates d’issues, de PRs et de milestones
+
+---
+
+## 🚀 Installation et compilation
+
+### Compilation locale
+```bash
+git clone https://github.com/hervetchoffo/measure-dynamics-book.git
+cd measure-dynamics-book
+
+# Méthode recommandée (si tu as un Makefile)
+make pdf
+
+# Ou manuellement
+pdflatex main.tex
+biber main
+pdflatex main.tex
+pdflatex main.tex
+```
+
+Le PDF final est généré dans `main.pdf`.
+
+---
+
+## 📁 Structure du dépôt
+```bash
+measure-dynamics-book/
+├── main.tex                      # Point d’entrée du document
+├── preamble/                     # Macros, packages, styles et mise en page (centralisés)
+├── frontmatter/                  # Page de titre, introduction, etc.
+├── chapters/                     # Contenu scientifique (un fichier par chapitre ou section)
+├── appendices/                   # Annexes (un fichier par annexe ou section)
+├── bibliography/                 # Fichiers .bib
+├── site/                         # Feuille de route, statut éditorial, historique des versions
+└── .github/
+    ├── ISSUE_TEMPLATE/           # Templates de rédaction
+    ├── PULL_REQUEST_TEMPLATE.md  # Template pour les Pull Requests
+    ├── MILESTONE_TEMPLATE.md     # Template pour documenter les milestones
+    └── workflows/                # CI/CD (compilation, publication de releases, auto-fermeture d’issues)
+```
+
+---
+
+## 📋 Templates disponibles
+Pour faciliter la collaboration, nous utilisons des templates structurés :
+
+- **Rédaction, relecture et correction des sections** → formulaires avec priorité, feature & release
+- **Pull Request** → template pour la validation et clôture des points d’action
+- **Milestone** → modèle pour documenter chaque livraison
+
+→ Voir :
+- [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/)
+- [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
+- [`.github/MILESTONE_TEMPLATE.md`](.github/MILESTONE_TEMPLATE.md)
+
+---
+
+## 👥 Comment contribuer
+1. Choisis une issue de rédaction
+2. Crée une branche `feature/nom-de-la-section`
+3. Rédige → commit → ouvre une PR avec `Fixes #XX`
+4. Un relecteur sera assigné et des corrections pourront être proposées
+
+Consulte le fichier **[CONTRIBUTING.md](CONTRIBUTING.md)** pour les règles détaillées de rédaction, relecture, correction et conventions LaTeX.
+
+---
+
+## 🗺️ Roadmap & statut éditorial
+Le suivi complet est disponible dans :
+- Le dossier [`site/`](site/)
+- Les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-book/milestones)**
+
+---
+
+## 📜 Licence
+- **Code source LaTeX + templates** : licence **MIT** (voir [LICENSE](LICENSE))
+- **Livre compilé (PDF)** : licence **Creative Commons CC BY-SA 4.0** (voir [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/))
+
+---
+
+## 📬 Contact & discussions
+- **Discussions GitHub** (recommandé pour toutes les questions)
+- Ouvert à toute proposition d’amélioration ou de co-auteur
+
+---
+
+**Merci à tous les contributeurs !** 🚀
+EOF
+
+# 16.7. Génération du fichier CONTRIBUTING.md
+echo "📝 Génération du fichier CONTRIBUTING ..."
+cat <<'EOF' > .github/CONTRIBUTING.md
+# 👥 Comment contribuer au projet
+
+Merci de votre intérêt pour **Théorie de la mesure et systèmes dynamiques** !
+Ce document explique comment participer efficacement au projet.
+
+---
+## 📋 Sommaire
+- [Avant de commencer](#-avant-de-commencer)
+- [Utiliser les templates](#%EF%B8%8F-utiliser-les-templates)
+- [Processus de contribution](#-processus-de-contribution)
+- [Conventions de nommage](#-conventions-de-nommage)
+- [Règles LaTeX](#-règles-latex)
+- [Relecture et validation](#-relecture-et-validation)
+- [Licence](#-licence)
+
+---
+## 📝 Avant de commencer
+
+1. Lisez le [`README.md`](README.md)
+2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-test/milestones)** en cours
+3. Vérifiez qu’il n’existe pas déjà une issue pour votre idée
+
+---
+## 🛠️ Utiliser les templates
+
+Nous utilisons des templates structurés pour garder le projet organisé :
+
+- **Rédaction / Relecture / Correction** → `.github/ISSUE_TEMPLATE/`
+- **Pull Request** → `.github/PULL_REQUEST_TEMPLATE.md`
+- **Milestone** → `.github/MILESTONE_TEMPLATE.md`
+
+**Toujours** créer une issue avant de commencer à coder.
+
+---
+## 🚀 Processus de contribution
+
+1. **Choisissez ou créez une issue** (avec le template "Rédaction")
+2. **Créez une branche** :
+   ```bash
+   git checkout -b feature/nom-de-la-section
+   ```
+3. **Développez** votre section
+4. **Committez** avec des messages clairs (voir conventions ci-dessous)
+5. **Poussez** et ouvrez une **Pull Request** (elle doit contenir `Fixes #XX`)
+6. **Attendez la relecture**
+
+---
+## 📌 Conventions de nommage
+
+### Branches
+- `feature/nom-court-de-la-section`
+- `fix/bug-xxx`
+- `doc/amélioration-readme`
+
+### Commits (style Conventional Commits)
+```bash
+feat: rédaction de la section 3.2
+fix: correction du théorème 4.1
+docs: mise à jour du README
+chore: mise à jour du template
+```
+
+### Pull Requests
+- Titre clair : `Section 3.2 – Théorème ergodique`
+- Description remplie avec le template
+- Doit contenir `Fixes #XX` ou `Closes #XX`
+
+---
+## 📖 Règles LaTeX
+
+- Utilisez toujours les macros définies dans `preamble/`
+- Un fichier par chapitre/sous-section quand c’est possible
+- Nommez les fichiers en kebab-case : `chapitre-3-systemes-dynamiques.tex`
+- Indentez correctement et commentez les parties complexes
+- Évitez les commandes obsolètes (`\it`, `\bf`, etc.)
+
+**Checklist avant PR** :
+- [ ] Compilation locale réussie (`make pdf`)
+- [ ] Pas de warning LaTeX
+- [ ] Bibliographie à jour (`biber`)
+- [ ] Respect des conventions de style du projet
+
+---
+## 👀 Relecture et validation
+
+- Vous pouvez demander une relecture en commentant la PR et un relecteur sera assigné
+- Les corrections se font en pushant sur la même branche
+- Une PR est mergée seulement après approbation + compilation OK
+
+---
+## 📜 Licence
+
+- **Code source et templates** : MIT (vous pouvez réutiliser librement)
+- **Contenu du livre (PDF)** : CC BY-SA 4.0 (attribution obligatoire)
+
+En contribuant, vous acceptez ces licences.
+
+---
+
+**Merci pour votre contribution !**
+Chaque section, correction ou idée compte. 🚀
+
+N’hésitez pas à poser vos questions dans les **Discussions GitHub**.
+EOF
+
+# 17. Premier Commit
 git add .
 git commit -m "Initialisation de la structure projet"
 
