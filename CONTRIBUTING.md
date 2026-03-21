@@ -61,7 +61,7 @@ chore: mise à jour du template
 ```
 
 ### Pull Requests
-- Titre clair : `[Rédaction] Section 3.2 – Théorème ergodique`
+- Titre clair : `Section 3.2 – Théorème ergodique`
 - Description remplie avec le template
 - Doit contenir `Fixes #XX` ou `Closes #XX`
 
