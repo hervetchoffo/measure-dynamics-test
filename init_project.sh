@@ -13,6 +13,7 @@ PROJECT=measure-dynamics-book
 # On vérifie si on est déjà dans le dossier pour éviter de boucler
 if [ "$(basename "$PWD")" = "$PROJECT" ]; then
     echo "⚠️ Déjà dans le dossier projet."
+    exit 1
 else
     if [ -d "$PROJECT" ]; then
         echo "❌ Le dossier $PROJECT existe déjà. Arrêt par sécurité."
@@ -91,7 +92,7 @@ mkdir -p \
   .github/workflows \
   site
 
-touch main.tex README.md
+touch main.tex README.md CONTRIBUTING.md
 
 # -----------------------
 # Préambule
@@ -110,37 +111,223 @@ touch frontmatter/introduction/introduction.tex
 # -----------------------
 # Chapitre 1
 # -----------------------
-mkdir -p chapters/chapter1_espaces_mesures/section1{A_espaces_mesurables,B_mesures_images,C_classe_monotone,D_espaces_standards,E_pathologies}
+mkdir -p chapters/01-espaces-mesures/sections/{01-espaces-mesurables,02-mesures-images,03-classe-monotone,04-espaces-standards,05-pathologies}
 
-touch chapters/chapter1_espaces_mesures/chapter1.tex
-touch chapters/chapter1_espaces_mesures/section1{A_espaces_mesurables/section1A,B_mesures_images/section1B,C_classe_monotone/section1C,D_espaces_standards/section1D,E_pathologies/section1E}.tex
+cat <<'EOF' > chapters/01-espaces-mesures/chapter.tex
+\chapter{Espaces mesurés}
+
+\input{sections/01-espaces-mesurables/section}
+\input{sections/02-mesures-images/section}
+\input{sections/03-classe-monotone/section}
+\input{sections/04-espaces-standards/section}
+\input{sections/05-pathologies/section}
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/01-espaces-mesurables/section.tex
+\section{Espaces mesurables}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/02-mesures-images/section.tex
+\section{Mesures images et mesures invariantes}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/03-classe-monotone/section.tex
+\section{Lemme de la classe monotone}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/04-espaces-standards/section.tex
+\section{Espaces mesurables standards}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/05-pathologies/section.tex
+\section{Pathologies classiques}
+Contenu à rédiger.
+EOF
 
 # -----------------------
 # Chapitre 2
 # -----------------------
-mkdir -p chapters/chapter2_construction_mesures/{section2A_caratheodory,section2B_riesz_markov/{part2B1_integration,part2B2_Lp,part2B3_riesz_markov},section2C_produit_desintegration/{part2C1_produit,part2C2_kolmogorov,part2C3_rokhlin}}
+mkdir -p chapters/02-techniques-construction/sections/{01-caratheodory,02-riesz-markov/subs/{01-integration,02-lp,03-riesz-markov},03-produit-desintegration/subs/{01-produit-fini,02-kolmogorov,03-rokhlin}}
 
-touch chapters/chapter2_construction_mesures/chapter2.tex
-touch chapters/chapter2_construction_mesures/section2A_caratheodory/section2A.tex
-touch chapters/chapter2_construction_mesures/section2B_riesz_markov/{section2B,part2B1_integration/part2B1,part2B2_Lp/part2B2,part2B3_riesz_markov/part2B3}.tex
-touch chapters/chapter2_construction_mesures/section2C_produit_desintegration/{section2C,part2C1_produit/part2C1,part2C2_kolmogorov/part2C2,part2C3_rokhlin/part2C3}.tex
+cat <<'EOF' > chapters/02-techniques-construction/chapter.tex
+\chapter{Techniques de construction des mesures}
+
+\input{sections/01-caratheodory/section}
+\input{sections/02-riesz-markov/section}
+\input{sections/03-produit-desintegration/section}
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/01-caratheodory/section.tex
+\section{Extension de Carathéodory}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/section.tex
+\section{Représentation de Riesz--Markov}
+
+\input{subs/01-integration/sub}
+\input{subs/02-lp/sub}
+\input{subs/03-riesz-markov/sub}
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/subs/01-integration/sub.tex
+\subsection{L'intégration}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/subs/02-lp/sub.tex
+\subsection{Les espaces \(L^p\)}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/subs/03-riesz-markov/sub.tex
+\subsection{Théorème de représentation de Riesz--Markov}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/section.tex
+\section{Produit et désintégration}
+
+\input{subs/01-produit-fini/sub}
+\input{subs/02-kolmogorov/sub}
+\input{subs/03-rokhlin/sub}
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/subs/01-produit-fini/sub.tex
+\subsection{Produit fini d'espaces mesurés}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/subs/02-kolmogorov/sub.tex
+\subsection{Théorème d'extension de Kolmogorov}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/subs/03-rokhlin/sub.tex
+\subsection{Théorème de désintégration de Rokhlin}
+Contenu à rédiger.
+EOF
 
 # -----------------------
 # Chapitre 3
 # -----------------------
-mkdir -p chapters/chapter3_theorie_ergodique/{section3A_dynamique/{part3A1_ergodicite,part3A2_decomposition},section3B_convergence/{part3B1_von_neumann,part3B2_maximal,part3B3_birkhoff,part3B4_folner},section3C_applications/{part3C1_nombres,part3C2_information,part3C3_jeux,part3C4_IA}}
+mkdir -p chapters/03-theorie-ergodique/sections/{01-dynamique-ergodique/subs/{01-ergodicite,02-decomposition},02-convergence-ergodique/subs/{01-von-neumann,02-maximal,03-birkhoff,04-folner},03-applications/subs/{01-nombres,02-information,03-jeux,04-ia}}
 
-touch chapters/chapter3_theorie_ergodique/chapter3.tex
-touch chapters/chapter3_theorie_ergodique/section3A_dynamique/{section3A,part3A1_ergodicite/part3A1,part3A2_decomposition/part3A2}.tex
-touch chapters/chapter3_theorie_ergodique/section3B_convergence/{section3B,part3B1_von_neumann/part3B1,part3B2_maximal/part3B2,part3B3_birkhoff/part3B3,part3B4_folner/part3B4}.tex
-touch chapters/chapter3_theorie_ergodique/section3C_applications/{section3C,part3C1_nombres/part3C1,part3C2_information/part3C2,part3C3_jeux/part3C3,part3C4_IA/part3C4}.tex
+cat <<'EOF' > chapters/03-theorie-ergodique/chapter.tex
+\chapter{Théorie ergodique et applications}
+
+\input{sections/01-dynamique-ergodique/section}
+\input{sections/02-convergence-ergodique/section}
+\input{sections/03-applications/section}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/section.tex
+\section{Dynamique ergodique}
+
+\input{subs/01-ergodicite/sub}
+\input{subs/02-decomposition/sub}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/01-ergodicite/sub.tex
+\subsection{L'ergodicité}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/02-decomposition/sub.tex
+\subsection{Théorème de décomposition ergodique}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/section.tex
+\section{Théorèmes de convergence ergodique}
+
+\input{subs/01-von-neumann/sub}
+\input{subs/02-maximal/sub}
+\input{subs/03-birkhoff/sub}
+\input{subs/04-folner/sub}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/01-von-neumann/sub.tex
+\subsection{Théorème ergodique moyen (Von Neumann)}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/02-maximal/sub.tex
+\subsection{Théorème ergodique maximal}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/03-birkhoff/sub.tex
+\subsection{Théorème ergodique ponctuel (Birkhoff)}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/04-folner/sub.tex
+\subsection{Les suites de Folner}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/section.tex
+\section{Applications de la théorie ergodique}
+
+\input{subs/01-nombres/sub}
+\input{subs/02-information/sub}
+\input{subs/03-jeux/sub}
+\input{subs/04-ia/sub}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/01-nombres/sub.tex
+\subsection{L'ergodicité en théorie des nombres}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/02-information/sub.tex
+\subsection{L'ergodicité en théorie de l'information}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/03-jeux/sub.tex
+\subsection{L'ergodicité en théorie des jeux}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/04-ia/sub.tex
+\subsection{L'ergodicité en intelligence artificielle}
+Contenu à rédiger.
+EOF
 
 # -----------------------
 # Appendices
 # -----------------------
-mkdir -p appendices/appendix{A_axiome_choix,B_quotient,C_galois_poincare,D_riemann_lebesgue,E_leibniz_schwartz,F_fonctions_elementaires}
+mkdir -p appendices/{A-axiome-choix,B-quotient,C-galois-poincare,D-riemann-lebesgue,E-leibniz-schwartz,F-fonctions-elementaires}
 
-touch appendices/appendix{A_axiome_choix/appendixA,B_quotient/appendixB,C_galois_poincare/appendixC,D_riemann_lebesgue/appendixD,E_leibniz_schwartz/appendixE,F_fonctions_elementaires/appendixF}.tex
+cat <<'EOF' > appendices/A-axiome-choix/appendix.tex
+\chapter{L'omniprésence de l'axiome du choix}
+EOF
+
+cat <<'EOF' > appendices/B-quotient/appendix.tex
+\chapter{L'omniprésence du quotient}
+EOF
+
+cat <<'EOF' > appendices/C-galois-poincare/appendix.tex
+\chapter{De Galois à Poincaré}
+EOF
+
+cat <<'EOF' > appendices/D-riemann-lebesgue/appendix.tex
+\chapter{De Riemann à Lebesgue}
+EOF
+
+cat <<'EOF' > appendices/E-leibniz-schwartz/appendix.tex
+\chapter{De Leibniz à Schwartz}
+EOF
+
+cat <<'EOF' > appendices/F-fonctions-elementaires/appendix.tex
+\chapter{Les fonctions élémentaires}
+EOF
 
 # -----------------------
 # Bibliographie
@@ -185,25 +372,26 @@ cat <<'EOF' > main.tex
 % ========================
 \mainmatter
 
-\input{chapters/chapter1_espaces_mesures/chapter1}
-\input{chapters/chapter2_construction_mesures/chapter2}
-\input{chapters/chapter3_theorie_ergodique/chapter3}
+% Chapitres
+\input{chapters/01-espaces-mesures/chapter}
+\input{chapters/02-techniques-construction/chapter}
+\input{chapters/03-theorie-ergodique/chapter}
 
-% ========================
 % Appendices
-% ========================
 \appendix
-\input{appendices/appendixA_axiome_choix/appendixA}
-\input{appendices/appendixB_quotient/appendixB}
-\input{appendices/appendixC_galois_poincare/appendixC}
-\input{appendices/appendixD_riemann_lebesgue/appendixD}
-\input{appendices/appendixE_leibniz_schwartz/appendixE}
-\input{appendices/appendixF_fonctions_elementaires/appendixF}
+\input{appendices/A-axiome-choix/appendix}
+\input{appendices/B-quotient/appendix}
+\input{appendices/C-galois-poincare/appendix}
+\input{appendices/D-riemann-lebesgue/appendix}
+\input{appendices/E-leibniz-schwartz/appendix}
+\input{appendices/F-fonctions-elementaires/appendix}
 
 % ========================
-% Bibliography
+% Back matter
 % ========================
 \backmatter
+
+% Bibliography
 \nocite{*} % <--- Force l'affichage de TOUTES les entrées du fichier .bib
 \input{bibliography/bibliography}
 
@@ -318,8 +506,8 @@ cat <<'EOF' > preamble/macros.tex
 \newcommand{\BookSubtitle}{Fondements, constructions et applications ergodiques}
 \newcommand{\BookAuthor}{TCHOFFO SONWA Hervé}
 \newcommand{\BookRepository}{https://github.com/hervetchoffo/measure-dynamics-book}
-\newcommand{\BookLicense}{Creative Commons BY-NC-SA 4.0}
-\newcommand{\BookLicenseUrl}{https://creativecommons.org/licenses/by-nc-sa/4.0/}
+\newcommand{\BookLicense}{Creative Commons CC BY-SA 4.0}
+\newcommand{\BookLicenseUrl}{https://creativecommons.org/licenses/by-sa/4.0/}
 
 % =========================
 % Métadonnées CI / CD
@@ -468,20 +656,8 @@ cat <<'EOF' > bibliography/references.bib
 }
 EOF
 
-# 14. Initialisation des chapitres et des annexes
-echo "📝 Initialisation des chapitres et des annexes..."
-echo "\chapter{Espaces mesurés}" > chapters/chapter1_espaces_mesures/chapter1.tex
-echo "\chapter{Techniques de construction des mesures}" > chapters/chapter2_construction_mesures/chapter2.tex
-echo "\chapter{Théorie ergodique et applications}" > chapters/chapter3_theorie_ergodique/chapter3.tex
-echo "\chapter{L’omniprésence de l’axiome du choix}" > appendices/appendixA_axiome_choix/appendixA.tex
-echo "\chapter{L'omniprésence du quotient}" > appendices/appendixB_quotient/appendixB.tex
-echo "\chapter{De Galois à Poincaré}" > appendices/appendixC_galois_poincare/appendixC.tex
-echo "\chapter{De Riemann à Lebesgue}" > appendices/appendixD_riemann_lebesgue/appendixD.tex
-echo "\chapter{De Leibniz à Schwartz}" > appendices/appendixE_leibniz_schwartz/appendixE.tex
-echo "\chapter{Les fonctions élémentaires}" > appendices/appendixF_fonctions_elementaires/appendixF.tex
-
-# 15. Création des workflows GitHub
-# 15.1. Génération du fichier build-dev-version.yml
+# 14. Création des workflows GitHub
+# 14.1. Génération du fichier build-dev-version.yml
 echo "📝 Génération du workflow Build PDF (dev-version)..."
 cat <<'EOF' > .github/workflows/build-dev-version.yml
 name: Build PDF (dev-version)
@@ -511,7 +687,7 @@ jobs:
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
-          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction. Suggestion via GitHub.}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
@@ -573,7 +749,7 @@ jobs:
             }
 EOF
 
-# 15.2. Génération du fichier build-feature-review.yml
+# 14.2. Génération du fichier build-feature-review.yml
 echo "📝 Génération du workflow Build review PDF..."
 cat <<'EOF' > .github/workflows/build-feature-review.yml
 name: Build review PDF and notify reviewers
@@ -712,7 +888,7 @@ jobs:
             }
 EOF
 
-# 15.3. Génération du fichier build-release.yml
+# 14.3. Génération du fichier build-release.yml
 echo "📝 Génération du workflow Build Release PDF (Tags)..."
 cat <<'EOF' > .github/workflows/build-release.yml
 name: Build Release PDF (Tags)
@@ -847,7 +1023,7 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
 EOF
 
-# 15.4. Génération du fichier auto-close-issues.yml
+# 14.4. Génération du fichier auto-close-issues.yml
 echo "📝 Génération du workflow Close issues automatically on PR merge..."
 cat <<'EOF' > .github/workflows/auto-close-issues.yml
 name: Close issues automatically on PR merge
@@ -925,8 +1101,8 @@ jobs:
             }
 EOF
 
-# 16. Création des templates GitHub
-# 16.1. Génération du fichier writing_issue.md
+# 15. Création des templates GitHub
+# 15.1. Génération du fichier writing_issue.md
 echo "📝 Génération du template de rédaction ..."
 cat <<'EOF' > .github/ISSUE_TEMPLATE/writing_issue.md
 ---
@@ -964,7 +1140,7 @@ labels: ["redaction"]
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 16.2. Génération du fichier review_issue.md
+# 15.2. Génération du fichier review_issue.md
 echo "📝 Génération du template de relecture ..."
 cat <<'EOF' > .github/ISSUE_TEMPLATE/review_issue.md
 ---
@@ -1008,7 +1184,7 @@ labels: ["relecture"]
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 16.3. Génération du fichier correction_issue.md
+# 15.3. Génération du fichier correction_issue.md
 echo "📝 Génération du template de correction ..."
 cat <<'EOF' > .github/ISSUE_TEMPLATE/correction_issue.md
 ---
@@ -1052,7 +1228,7 @@ labels: ["correction"]
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 16.4. Génération du fichier PULL_REQUEST_TEMPLATE.md
+# 15.4. Génération du fichier PULL_REQUEST_TEMPLATE.md
 echo "📝 Génération du template PR ..."
 cat <<'EOF' > .github/PULL_REQUEST_TEMPLATE.md
 ---
@@ -1093,7 +1269,7 @@ Ce PR [ajoute/corrige] [décris brièvement les modifications].
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 16.5. Génération du fichier MILESTONE_TEMPLATE.md
+# 15.5. Génération du fichier MILESTONE_TEMPLATE.md
 echo "📝 Génération du template milestone ..."
 cat <<'EOF' > .github/MILESTONE_TEMPLATE.md
 ---
@@ -1130,7 +1306,7 @@ title: "[TAG NAME] ([nom de la release])"
 **Date limite** : [JJ/MM/AAAA]
 EOF
 
-# 16.6. Génération du fichier README.md
+# 15.6. Génération du fichier README.md
 echo "📝 Génération du fichier README ..."
 cat <<'EOF' > .github/README.md
 # 📘 Théorie de la mesure et systèmes dynamiques
@@ -1260,7 +1436,7 @@ Le suivi complet est disponible dans :
 **Merci à tous les contributeurs !** 🚀
 EOF
 
-# 16.7. Génération du fichier CONTRIBUTING.md
+# 15.7. Génération du fichier CONTRIBUTING.md
 echo "📝 Génération du fichier CONTRIBUTING ..."
 cat <<'EOF' > .github/CONTRIBUTING.md
 # 👥 Comment contribuer au projet
@@ -1368,7 +1544,7 @@ Chaque section, correction ou idée compte. 🚀
 N’hésitez pas à poser vos questions dans les **Discussions GitHub**.
 EOF
 
-# 17. Premier Commit
+# 16. Premier Commit
 git add .
 git commit -m "Initialisation de la structure projet"
 

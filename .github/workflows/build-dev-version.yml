@@ -25,7 +25,7 @@ jobs:
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
-          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction. Suggestion via GitHub.}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
