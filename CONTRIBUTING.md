@@ -184,7 +184,7 @@ chore: mise à jour du template
 - Les fichiers LaTeX s'appellent toujours `appendix.tex`, `chapter.tex`, `section.tex` ou `sub.tex`
 - Les dossiers portent les noms des annexes, chapitres, sections ou sous-sections correspondantes
 - Nommez les dossiers en kebab-case : `02-techniques-construction`
-- Utilisez la commande LaTeX `input{...}` pour rendre le code modulaire : pour la `section 2.2`, on peut par exemple éditer le fichier `chapters/02-techniques-construction/sections/02-riesz-markov/section.tex` comme suit
+- Utilisez la commande LaTeX `input{...}` pour rendre le code modulaire : pour la `section 2.2`, on peut par exemple éditer le fichier `chapters/02-techniques-construction/sections/02-riesz-markov/section.tex` comme suit :
 ```latex
 \section{Représentation de Riesz–Markov}
 
