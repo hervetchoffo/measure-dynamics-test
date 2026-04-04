@@ -2,32 +2,47 @@
 
 # ==============================================================================
 # Script d'initialisation : Projet LaTeX "Measure & Dynamics"
-# Configuration : Linux Mint / VS Code / Git
+# Environnement : Linux Mint / VS Code / Git
 # ==============================================================================
-# 1. Environnement d'exécution du script
-set -e # Arrêter le script en cas d'erreur
 
-# 2. Création du dossier projet
-PROJECT=measure-dynamics-book
+# 1. Configuration du script
+set -euo pipefail  # Arrêter en cas d'erreur, vérifier les variables non définies, et les erreurs dans les pipes
 
-# On vérifie si on est déjà dans le dossier pour éviter de boucler
+# 2. Définition des variables
+PROJECT="measure-dynamics-book"
+GIT_REMOTE_URL="https://github.com/hervetchoffo/measure-dynamics-book.git"
+
+# 3. Vérification de l'environnement
+echo "🔍 Vérification de l'environnement..."
+
+# Vérifier si on est déjà dans le dossier du projet
 if [ "$(basename "$PWD")" = "$PROJECT" ]; then
-    echo "⚠️ Déjà dans le dossier projet."
-    exit 1
-else
-    if [ -d "$PROJECT" ]; then
-        echo "❌ Le dossier $PROJECT existe déjà. Arrêt par sécurité."
+    echo "⚠️  Vous êtes déjà dans le dossier '$PROJECT'."
+
+    # Vérifier si c'est déjà un dépôt Git
+    if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+        echo "❌ Ce dossier est déjà un dépôt Git. Arrêt par sécurité."
         exit 1
     fi
-    mkdir -p $PROJECT
-    cd $PROJECT
+else
+    # Vérifier si le dossier existe déjà ailleurs
+    if [ -d "$PROJECT" ]; then
+        echo "❌ Le dossier '$PROJECT' existe déjà. Arrêt par sécurité."
+        exit 1
+    fi
+
+    # Créer le dossier et y entrer
+    echo "📁 Création du dossier '$PROJECT'..."
+    mkdir -p "$PROJECT"
+    cd "$PROJECT" || exit 1
 fi
 
-# 3. Initialisation Git et .gitignore
-echo "📁 Configuration de Git..."
-git init -q # initialisation
-git branch -M main # vérification qu'il s'agit bien la branche s'appelle bien 'main' (standard GitHub actuel)
-git remote add origin https://github.com/hervetchoffo/measure-dynamics-book.git # ajout de l'adresse du dépôt distant
+# 4. Initialisation Git
+echo "🔧 Configuration de Git..."
+git init -q
+git branch -M main  # Renommer la branche par défaut en 'main'
+git remote add origin "$GIT_REMOTE_URL"  # Ajouter le dépôt distant
+echo "📝 Création du fichier .gitignore pour LaTeX..."
 cat <<'EOF' > .gitignore
 ## --- CORE LATEX (Fichiers auxiliaires de base) ---
 *.aux
@@ -79,7 +94,7 @@ pythontex-files-*/
 version.tex
 EOF
 
-# 4. Création de l'arborescence complète
+# 5. Création de l'arborescence complète
 echo "📁 Création de l'arborescence..."
 
 # -----------------------
@@ -346,7 +361,7 @@ touch site/roadmap.md
 touch site/changelog.md
 touch site/_config.yml
 
-# 5. Génération du fichier main.tex
+# 6. Génération du fichier main.tex
 echo "📝 Génération du fichier main.tex..."
 cat <<'EOF' > main.tex
 \documentclass[11pt,a4paper]{book}
@@ -400,7 +415,7 @@ cat <<'EOF' > main.tex
 \end{document}
 EOF
 
-# 6. Génération du fichier packages.tex
+# 7. Génération du fichier packages.tex
 echo "📝 Génération du fichier packages.tex..."
 cat <<'EOF' > preamble/packages.tex
 % --- Encodage et Langue ---
@@ -448,7 +463,7 @@ cat <<'EOF' > preamble/packages.tex
 \addbibresource{bibliography/references.bib}
 EOF
 
-# 7. Génération du fichier theoremstyle.tex
+# 8. Génération du fichier theoremstyle.tex
 echo "📝 Génération du fichier theoremstyle.tex..."
 cat <<'EOF' > preamble/theoremstyle.tex
 % --- Style pour les Théorèmes et résultats (Italique) ---
@@ -480,7 +495,7 @@ cat <<'EOF' > preamble/theoremstyle.tex
 \crefname{lemma}{lemme}{lemmes}
 EOF
 
-# 8. Génération du fichier layout.tex
+# 9. Génération du fichier layout.tex
 echo "📝 Génération du fichier layout.tex..."
 cat <<'EOF' > preamble/layout.tex
 % --- Numérotation et Table des matières ---
@@ -498,7 +513,7 @@ cat <<'EOF' > preamble/layout.tex
 \linespread{1.05}
 EOF
 
-# 9. Génération du fichier macros.tex
+# 10. Génération du fichier macros.tex
 echo "📝 Génération du fichier macros.tex..."
 cat <<'EOF' > preamble/macros.tex
 % ==================================================
@@ -557,7 +572,7 @@ cat <<'EOF' > preamble/macros.tex
 \DeclareMathOperator{\diam}{diam}
 EOF
 
-# 10. Génération du fichier titlepage.tex
+# 11. Génération du fichier titlepage.tex
 echo "📝 Génération du fichier titlepage.tex..."
 cat <<'EOF' > frontmatter/titlepage.tex
 \begin{titlepage}
@@ -609,7 +624,7 @@ cat <<'EOF' > frontmatter/titlepage.tex
 \cleardoublepage
 EOF
 
-# 11. Génération du fichier introduction.tex
+# 12. Génération du fichier introduction.tex
 echo "📝 Génération du fichier introduction.tex..."
 cat <<'EOF' > frontmatter/introduction/introduction.tex
 \starredchapter{Introduction}
@@ -617,7 +632,7 @@ cat <<'EOF' > frontmatter/introduction/introduction.tex
 Ce livre est consacré à la théorie de la mesure et à ses interactions profondes avec les systèmes dynamiques et la théorie ergodique.
 EOF
 
-# 12. Génération du fichier bibliography.tex
+# 13. Génération du fichier bibliography.tex
 echo "📝 Génération du fichier bibliography.tex..."
 cat <<'EOF' > bibliography/bibliography.tex
 \starredchapter{Bibliographie}
@@ -625,7 +640,7 @@ cat <<'EOF' > bibliography/bibliography.tex
 \printbibliography[heading=none]
 EOF
 
-# 13. Initialisation du fichier references.bib
+# 14. Initialisation du fichier references.bib
 echo "📝 Initialisation du fichier references.bib..."
 cat <<'EOF' > bibliography/references.bib
 @book{Cohn2013,
@@ -658,8 +673,8 @@ cat <<'EOF' > bibliography/references.bib
 }
 EOF
 
-# 14. Création des workflows GitHub
-# 14.1. Génération du fichier build-dev-version.yml
+# 15. Création des workflows GitHub
+# 15.1. Génération du fichier build-dev-version.yml
 echo "📝 Génération du workflow Build PDF (dev-version)..."
 cat <<'EOF' > .github/workflows/build-dev-version.yml
 name: Build PDF (dev-version)
@@ -751,7 +766,7 @@ jobs:
             }
 EOF
 
-# 14.2. Génération du fichier build-feature-review.yml
+# 15.2. Génération du fichier build-feature-review.yml
 echo "📝 Génération du workflow Build review PDF..."
 cat <<'EOF' > .github/workflows/build-feature-review.yml
 name: Build review PDF and notify reviewers
@@ -890,7 +905,7 @@ jobs:
             }
 EOF
 
-# 14.3. Génération du fichier build-release.yml
+# 15.3. Génération du fichier build-release.yml
 echo "📝 Génération du workflow Build Release PDF (Tags)..."
 cat <<'EOF' > .github/workflows/build-release.yml
 name: Build Release PDF (Tags)
@@ -1025,7 +1040,7 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
 EOF
 
-# 14.4. Génération du fichier auto-close-issues.yml
+# 15.4. Génération du fichier auto-close-issues.yml
 echo "📝 Génération du workflow Close issues automatically on PR merge..."
 cat <<'EOF' > .github/workflows/auto-close-issues.yml
 name: Close issues automatically on PR merge
@@ -1103,8 +1118,8 @@ jobs:
             }
 EOF
 
-# 15. Création des templates GitHub
-# 15.1. Génération du fichier writing_issue.md
+# 16. Création des templates GitHub
+# 16.1. Génération du fichier writing_issue.md
 echo "📝 Génération du template de rédaction ..."
 cat <<'EOF' > .github/ISSUE_TEMPLATE/writing_issue.md
 ---
@@ -1142,7 +1157,7 @@ labels: ["redaction"]
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 15.2. Génération du fichier review_issue.md
+# 16.2. Génération du fichier review_issue.md
 echo "📝 Génération du template de relecture ..."
 cat <<'EOF' > .github/ISSUE_TEMPLATE/review_issue.md
 ---
@@ -1186,7 +1201,7 @@ labels: ["relecture"]
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 15.3. Génération du fichier correction_issue.md
+# 16.3. Génération du fichier correction_issue.md
 echo "📝 Génération du template de correction ..."
 cat <<'EOF' > .github/ISSUE_TEMPLATE/correction_issue.md
 ---
@@ -1230,7 +1245,7 @@ labels: ["correction"]
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 15.4. Génération du fichier PULL_REQUEST_TEMPLATE.md
+# 16.4. Génération du fichier PULL_REQUEST_TEMPLATE.md
 echo "📝 Génération du template PR ..."
 cat <<'EOF' > .github/PULL_REQUEST_TEMPLATE.md
 ---
@@ -1271,7 +1286,7 @@ Ce PR [ajoute/corrige] [décris brièvement les modifications].
 - Priorité : `haute-priorite` | `moyenne-priorite` | `faible-priorite`
 EOF
 
-# 15.5. Génération du fichier MILESTONE_TEMPLATE.md
+# 16.5. Génération du fichier MILESTONE_TEMPLATE.md
 echo "📝 Génération du template milestone ..."
 cat <<'EOF' > .github/MILESTONE_TEMPLATE.md
 ---
@@ -1308,7 +1323,7 @@ title: "[TAG NAME] ([nom de la release])"
 **Date limite** : [JJ/MM/AAAA]
 EOF
 
-# 15.6. Génération du fichier README.md
+# 16.6. Génération du fichier README.md
 echo "📝 Génération du fichier README ..."
 cat <<'EOF' > .github/README.md
 # 📘 Théorie de la mesure et systèmes dynamiques
@@ -1438,7 +1453,7 @@ Le suivi complet est disponible dans :
 **Merci à tous les contributeurs !** 🚀
 EOF
 
-# 15.7. Génération du fichier CONTRIBUTING.md
+# 16.7. Génération du fichier CONTRIBUTING.md
 echo "📝 Génération du fichier CONTRIBUTING ..."
 cat <<'EOF' > .github/CONTRIBUTING.md
 # 👥 Comment contribuer au projet
@@ -1546,9 +1561,10 @@ Chaque section, correction ou idée compte. 🚀
 N’hésitez pas à poser vos questions dans les **Discussions GitHub**.
 EOF
 
-# 16. Premier Commit
+# 17. Premier Commit
+echo "📦 Premier commit..."
 git add .
-git commit -m "Initialisation de la structure projet"
+git commit -m "Initialisation du projet"
 
 echo "✅ Projet initialisé avec succès."
 
