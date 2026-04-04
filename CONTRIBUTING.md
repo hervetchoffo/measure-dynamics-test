@@ -49,6 +49,7 @@ Nous utilisons des templates structurés pour garder le projet organisé :
 
 ### Arborescence du code LaTeX
 - Une arborescence modulaire et hiérarchique du code LaTeX pour faciliter son édition
+- Une approche REST-like pour la représentation des ressources du code LaTeX : `appendices`, `chapters`, `sections` & `subs`
 
 ```bash
 .
@@ -180,7 +181,7 @@ chore: mise à jour du template
 - Utilisez toujours les macros définies dans `preamble/`
 - Indentez correctement et commentez les parties complexes
 - Évitez les commandes obsolètes (`\it`, `\bf`, etc.)
-- Utilisez 1 fichier & 1 dossier par annexe, chapitre, section ou sous-section quand c'est possible
+- Un fichier & dossier par annexe, chapitre, section ou sous-section quand c'est possible
 - Les fichiers LaTeX s'appellent toujours `appendix.tex`, `chapter.tex`, `section.tex` ou `sub.tex`
 - Les dossiers portent les noms des annexes, chapitres, sections ou sous-sections correspondantes
 - Nommez les dossiers en kebab-case : `02-techniques-construction`
