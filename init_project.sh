@@ -41,8 +41,10 @@ cat <<'EOF' > .gitignore
 
 ## --- BIBLIOGRAPHIE (BibTeX / Biber) ---
 *.bbl
+*.bbl-SAVE-ERROR
 *.blg
 *.bcf
+*.bcf-SAVE-ERROR
 *.run.xml
 
 ## --- INDEX, GLOSSAIRES ET LISTES (lof, lot, ist) ---
@@ -116,11 +118,11 @@ mkdir -p chapters/01-espaces-mesures/sections/{01-espaces-mesurables,02-mesures-
 cat <<'EOF' > chapters/01-espaces-mesures/chapter.tex
 \chapter{Espaces mesurés}
 
-\input{sections/01-espaces-mesurables/section}
-\input{sections/02-mesures-images/section}
-\input{sections/03-classe-monotone/section}
-\input{sections/04-espaces-standards/section}
-\input{sections/05-pathologies/section}
+\input{chapters/01-espaces-mesures/sections/01-espaces-mesurables/section}
+\input{chapters/01-espaces-mesures/sections/02-mesures-images/section}
+\input{chapters/01-espaces-mesures/sections/03-classe-monotone/section}
+\input{chapters/01-espaces-mesures/sections/04-espaces-standards/section}
+\input{chapters/01-espaces-mesures/sections/05-pathologies/section}
 EOF
 
 cat <<'EOF' > chapters/01-espaces-mesures/sections/01-espaces-mesurables/section.tex
@@ -156,9 +158,9 @@ mkdir -p chapters/02-techniques-construction/sections/{01-caratheodory,02-riesz-
 cat <<'EOF' > chapters/02-techniques-construction/chapter.tex
 \chapter{Techniques de construction des mesures}
 
-\input{sections/01-caratheodory/section}
-\input{sections/02-riesz-markov/section}
-\input{sections/03-produit-desintegration/section}
+\input{chapters/02-techniques-construction/sections/01-caratheodory/section}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/section}
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/section}
 EOF
 
 cat <<'EOF' > chapters/02-techniques-construction/sections/01-caratheodory/section.tex
@@ -169,9 +171,9 @@ EOF
 cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/section.tex
 \section{Représentation de Riesz--Markov}
 
-\input{subs/01-integration/sub}
-\input{subs/02-lp/sub}
-\input{subs/03-riesz-markov/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/01-integration/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/02-lp/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/03-riesz-markov/sub}
 EOF
 
 cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/subs/01-integration/sub.tex
@@ -192,9 +194,9 @@ EOF
 cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/section.tex
 \section{Produit et désintégration}
 
-\input{subs/01-produit-fini/sub}
-\input{subs/02-kolmogorov/sub}
-\input{subs/03-rokhlin/sub}
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/subs/01-produit-fini/sub}
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/subs/02-kolmogorov/sub}
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/subs/03-rokhlin/sub}
 EOF
 
 cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/subs/01-produit-fini/sub.tex
@@ -220,16 +222,16 @@ mkdir -p chapters/03-theorie-ergodique/sections/{01-dynamique-ergodique/subs/{01
 cat <<'EOF' > chapters/03-theorie-ergodique/chapter.tex
 \chapter{Théorie ergodique et applications}
 
-\input{sections/01-dynamique-ergodique/section}
-\input{sections/02-convergence-ergodique/section}
-\input{sections/03-applications/section}
+\input{chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/section}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/section}
+\input{chapters/03-theorie-ergodique/sections/03-applications/section}
 EOF
 
 cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/section.tex
 \section{Dynamique ergodique}
 
-\input{subs/01-ergodicite/sub}
-\input{subs/02-decomposition/sub}
+\input{chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/01-ergodicite/sub}
+\input{chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/02-decomposition/sub}
 EOF
 
 cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/01-ergodicite/sub.tex
@@ -245,10 +247,10 @@ EOF
 cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/section.tex
 \section{Théorèmes de convergence ergodique}
 
-\input{subs/01-von-neumann/sub}
-\input{subs/02-maximal/sub}
-\input{subs/03-birkhoff/sub}
-\input{subs/04-folner/sub}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/01-von-neumann/sub}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/02-maximal/sub}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/03-birkhoff/sub}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/04-folner/sub}
 EOF
 
 cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/01-von-neumann/sub.tex
@@ -274,10 +276,10 @@ EOF
 cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/section.tex
 \section{Applications de la théorie ergodique}
 
-\input{subs/01-nombres/sub}
-\input{subs/02-information/sub}
-\input{subs/03-jeux/sub}
-\input{subs/04-ia/sub}
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/01-nombres/sub}
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/02-information/sub}
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/03-jeux/sub}
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/04-ia/sub}
 EOF
 
 cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/01-nombres/sub.tex
@@ -306,11 +308,11 @@ EOF
 mkdir -p appendices/{A-axiome-choix,B-quotient,C-galois-poincare,D-riemann-lebesgue,E-leibniz-schwartz,F-fonctions-elementaires}
 
 cat <<'EOF' > appendices/A-axiome-choix/appendix.tex
-\chapter{L'omniprésence de l'axiome du choix}
+\chapter{Omniprésence de l'axiome du choix}
 EOF
 
 cat <<'EOF' > appendices/B-quotient/appendix.tex
-\chapter{L'omniprésence du quotient}
+\chapter{Omniprésence du quotient}
 EOF
 
 cat <<'EOF' > appendices/C-galois-poincare/appendix.tex
@@ -326,7 +328,7 @@ cat <<'EOF' > appendices/E-leibniz-schwartz/appendix.tex
 EOF
 
 cat <<'EOF' > appendices/F-fonctions-elementaires/appendix.tex
-\chapter{Les fonctions élémentaires}
+\chapter{Des fonctions élémentaires}
 EOF
 
 # -----------------------
