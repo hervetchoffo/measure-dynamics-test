@@ -106,6 +106,7 @@ mkdir -p \
   chapters \
   appendices \
   bibliography \
+  .github/ISSUE_TEMPLATE \
   .github/workflows \
   site
 
@@ -1325,7 +1326,7 @@ EOF
 
 # 16.6. Génération du fichier README.md
 echo "📝 Génération du fichier README ..."
-cat <<'EOF' > .github/README.md
+cat <<'EOF' > README.md
 # 📘 Théorie de la mesure et systèmes dynamiques
 
 **Un ouvrage de référence sur la théorie de la mesure, les systèmes dynamiques et la théorie ergodique**
@@ -1455,7 +1456,7 @@ EOF
 
 # 16.7. Génération du fichier CONTRIBUTING.md
 echo "📝 Génération du fichier CONTRIBUTING ..."
-cat <<'EOF' > .github/CONTRIBUTING.md
+cat <<'EOF' > CONTRIBUTING.md
 # 👥 Comment contribuer au projet
 
 Merci de votre intérêt pour **Théorie de la mesure et systèmes dynamiques** !
