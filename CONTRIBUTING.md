@@ -47,6 +47,116 @@ Nous utilisons des templates structurés pour garder le projet organisé :
 ---
 ## 📌 Conventions de nommage
 
+### Arborescence du code LaTeX
+- Une arborescence modulaire et hiérarchique du code LaTeX pour faciliter son édition
+- Une approche REST-like pour la représentation des ressources du code LaTeX : `appendices`, `chapters`, `sections` et `subs`
+
+```bash
+.
+├── main.tex
+│
+├── preamble
+│   ├── macros.tex
+│   ├── packages.tex
+│   ├── theoremstyle.tex
+│   └── layout.tex
+│
+├── frontmatter
+│   ├── titlepage.tex
+│   └── introduction
+│       └── introduction.tex
+│
+├── chapters
+│   ├── 01-espaces-mesures
+│   │   ├── chapter.tex
+│   │   └── sections
+│   │       ├── 01-espaces-mesurables
+│   │       │   └── section.tex
+│   │       ├── 02-mesures-images
+│   │       │   └── section.tex
+│   │       ├── 03-classe-monotone
+│   │       │   └── section.tex
+│   │       ├── 04-espaces-standards
+│   │       │   └── section.tex
+│   │       └── 05-pathologies
+│   │           └── section.tex
+│   │
+│   ├── 02-techniques-construction
+│   │   ├── chapter.tex
+│   │   └── sections
+│   │       ├── 01-caratheodory
+│   │       │   └── section.tex
+│   │       ├── 02-riesz-markov
+│   │       │   ├── section.tex
+│   │       │   └── subs
+│   │       │       ├── 01-integration
+│   │       │       │   └── sub.tex
+│   │       │       ├── 02-lp
+│   │       │       │   └── sub.tex
+│   │       │       └── 03-riesz-markov
+│   │       │           └── sub.tex
+│   │       └── 03-produit-desintegration
+│   │           ├── section.tex
+│   │           └── subs
+│   │               ├── 01-produit-fini
+│   │               │   └── sub.tex
+│   │               ├── 02-kolmogorov
+│   │               │   └── sub.tex
+│   │               └── 03-rokhlin
+│   │                   └── sub.tex
+│   │
+│   └── 03-theorie-ergodique
+│       ├── chapter.tex
+│       └── sections
+│           ├── 01-dynamique-ergodique
+│           │   ├── section.tex
+│           │   └── subs
+│           │       ├── 01-ergodicite
+│           │       │   └── sub.tex
+│           │       └── 02-decomposition
+│           │           └── sub.tex
+│           ├── 02-convergence-ergodique
+│           │   ├── section.tex
+│           │   └── subs
+│           │       ├── 01-von-neumann
+│           │       │   └── sub.tex
+│           │       ├── 02-maximal
+│           │       │   └── sub.tex
+│           │       ├── 03-birkhoff
+│           │       │   └── sub.tex
+│           │       └── 04-folner
+│           │           └── sub.tex
+│           └── 03-applications
+│               ├── section.tex
+│               └── subs
+│                   ├── 01-nombres
+│                   │   └── sub.tex
+│                   ├── 02-information
+│                   │   └── sub.tex
+│                   ├── 03-jeux
+│                   │   └── sub.tex
+│                   └── 04-ia
+│                       └── sub.tex
+│
+├── appendices
+│   ├── A-axiome-choix/
+│   │   └── appendix.tex
+│   ├── B-quotient/
+│   │   └── appendix.tex
+│   ├── C-galois-poincare/
+│   │   └── appendix.tex
+│   ├── D-riemann-lebesgue/
+│   │   └── appendix.tex
+│   ├── E-leibniz-schwartz/
+│   │   └── appendix.tex
+│   └── F-fonctions-elementaires/
+│       └── appendix.tex
+│
+└── bibliography
+    ├── bibliography.tex
+    └── references.bib
+```
+
 ### Branches
 - `feature/nom-court-de-la-section`
 - `fix/bug-xxx`
@@ -69,10 +179,20 @@ chore: mise à jour du template
 ## 📖 Règles LaTeX
 
 - Utilisez toujours les macros définies dans `preamble/`
-- Un fichier par chapitre/sous-section quand c’est possible
-- Nommez les fichiers en kebab-case : `chapitre-3-systemes-dynamiques.tex`
 - Indentez correctement et commentez les parties complexes
 - Évitez les commandes obsolètes (`\it`, `\bf`, etc.)
+- Un fichier et un dossier par annexe, chapitre, section ou sous-section quand c'est possible
+- Les fichiers LaTeX s'appellent toujours `appendix.tex`, `chapter.tex`, `section.tex` ou `sub.tex`
+- Les dossiers portent les noms des annexes, chapitres, sections ou sous-sections correspondantes
+- Nommez les dossiers en kebab-case : `02-techniques-construction`
+- Utilisez la commande LaTeX `\input{...}` pour rendre le code modulaire : pour la `section 2.2`, on peut par exemple éditer le fichier `chapters/02-techniques-construction/sections/02-riesz-markov/section.tex` comme suit :
+```latex
+\section{Représentation de Riesz–Markov}
+
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/01-integration/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/02-lp/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/03-riesz-markov/sub}
+```
 
 **Checklist avant PR** :
 - [ ] Compilation locale réussie (`make pdf`)
