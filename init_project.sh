@@ -1476,7 +1476,7 @@ Ce document explique comment participer efficacement au projet.
 ## 📝 Avant de commencer
 
 1. Lisez le [`README.md`](README.md)
-2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-test/milestones)** en cours
+2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-book/milestones)** en cours
 3. Vérifiez qu’il n’existe pas déjà une issue pour votre idée
 
 ---
