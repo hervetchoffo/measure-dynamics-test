@@ -699,9 +699,39 @@ jobs:
           fetch-depth: 1 # On n'a besoin que du commit actuel pour le hash court
 
       - name: Injection des métadonnées (version.tex)
+        id: inject
         run: |
+          # extraire dernier segment du nom de branche
+          branch="${GITHUB_REF_NAME##*/}"
+          
+          # normaliser : minuscules, remplacer groupes de caractères non autorisés par '-'
+          safe_branch="$(printf '%s' "$branch" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed -E 's/[^a-z0-9._-]+/-/g' \
+            | sed -E 's/^-+|-+$//g')"
+          
+          # tronquer si trop long (ex. 60 chars)
+          safe_branch="${safe_branch:0:60}"
+          
+          # échapper caractères spéciaux pour LaTeX
+          latex_branch="$(printf '%s' "$safe_branch" \
+            | sed -e 's/\\/\\textbackslash{}/g' \
+                  -e 's/%/\\%/g' \
+                  -e 's/_/\\_/g' \
+                  -e 's/#/\\#/g' \
+                  -e 's/&/\\&/g' \
+                  -e 's/{/\\{/g' \
+                  -e 's/}/\\}/g' \
+                  -e 's/\\$/\\$/g' \
+                  -e 's/\\^/\\^/g' \
+                  -e "s/~/\\\\textasciitilde{}/g")"
+          
+          # définir un output de step
+          echo "safe_branch=${safe_branch}" >> $GITHUB_OUTPUT
+          
+          # écrire version.tex
           echo "\\newcommand{\\BookVersion}{working-copy}" > version.tex
-          echo "\\newcommand{\\BookBranch}{${GITHUB_REF_NAME}}" >> version.tex
+          echo "\\newcommand{\\BookBranch}{${latex_branch}}" >> version.tex
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
@@ -725,7 +755,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Le nom inclut la branche et le run_id pour être unique
-          name: dev-pdf-${{ github.ref_name }}-${{ github.run_id }}
+          name: dev-pdf-${{ steps.inject.outputs.safe_branch }}-${{ github.run_id }}
           path: main.pdf
 
       - name: Cleanup old artifacts (Keep last 5 for this branch)
@@ -733,7 +763,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const branchName = "${{ github.ref_name }}";
+            const branchName = "${{ steps.inject.outputs.safe_branch }}";
             const prefix = `dev-pdf-${branchName}-`;
 
             // 1. Récupérer les artefacts du dépôt
@@ -796,9 +826,40 @@ jobs:
           echo "CURRENT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Injection des métadonnées (version.tex)
+        id: inject
         run: |
+          # extraire dernier segment du nom de branche
+          branch="${{ github.head_ref }}" # récupérer la valeur fournie par Actions dans une variable shell
+          branch="${branch##*/}"
+          
+          # normaliser : minuscules, remplacer groupes de caractères non autorisés par '-'
+          safe_branch="$(printf '%s' "$branch" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed -E 's/[^a-z0-9._-]+/-/g' \
+            | sed -E 's/^-+|-+$//g')"
+          
+          # tronquer si trop long (ex. 60 chars)
+          safe_branch="${safe_branch:0:60}"
+          
+          # échapper caractères spéciaux pour LaTeX
+          latex_branch="$(printf '%s' "$safe_branch" \
+            | sed -e 's/\\/\\textbackslash{}/g' \
+                  -e 's/%/\\%/g' \
+                  -e 's/_/\\_/g' \
+                  -e 's/#/\\#/g' \
+                  -e 's/&/\\&/g' \
+                  -e 's/{/\\{/g' \
+                  -e 's/}/\\}/g' \
+                  -e 's/\\$/\\$/g' \
+                  -e 's/\\^/\\^/g' \
+                  -e "s/~/\\\\textasciitilde{}/g")"
+          
+          # définir un output de step
+          echo "safe_branch=${safe_branch}" >> $GITHUB_OUTPUT
+          
+          # écrire version.tex
           echo "\\newcommand{\\BookVersion}{review-copy}" > version.tex
-          echo "\\newcommand{\\BookBranch}{${{ github.head_ref }}}" >> version.tex
+          echo "\\newcommand{\\BookBranch}{${latex_branch}}" >> version.tex
           echo "\\newcommand{\\BookCommit}{${{ env.CURRENT_COMMIT }}}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de relecture}" >> version.tex
@@ -823,7 +884,8 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const branchName = "${{ github.head_ref }}";
+            const branchName = "${{ steps.inject.outputs.safe_branch }}";
+            const prefix = `review-pdf-${branchName}-`;
             
             const response = await github.rest.actions.listArtifactsForRepo({
               owner,
@@ -833,8 +895,7 @@ jobs:
             // On filtre pour ne garder que les artefacts de cette branche
             // en excluant celui du run actuel par sécurité
             const oldArtifacts = response.data.artifacts.filter(art => 
-              art.name.startsWith(`review-pdf-${branchName}`) &&
-              art.workflow_run.id !== context.runId
+              art.name.startsWith(prefix)
             );
 
             for (const artifact of oldArtifacts) {
@@ -849,7 +910,7 @@ jobs:
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: review-pdf-${{ github.head_ref }}-${{ github.run_id }}
+          name: review-pdf-${{ steps.inject.outputs.safe_branch }}-${{ github.run_id }}
           path: main.pdf
 
       - name: Notify reviewers
@@ -860,11 +921,14 @@ jobs:
             const pull_number = context.issue.number;
             const artifact_url = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
             
+            const branch = "${{ github.head_ref }}";
+            const commit = "${{ env.CURRENT_COMMIT }}";
+            
             const comment_header = "📄 **Nouveau PDF disponible pour relecture**";
             const body = `
             ${comment_header}
-            - **Branche** : \`${{ github.head_ref }}\`
-            - **Commit** : \`${{ env.CURRENT_COMMIT }}\`
+            - **Branche** : \`${branch}\`
+            - **Commit** : \`${commit}\`
             - **Dernière mise à jour** : ${new Date().toLocaleString('fr-FR')}
 
             📥 **[Télécharger le PDF ici](${artifact_url})**
@@ -1659,4 +1723,3 @@ git add .
 git commit -m "Initialisation du projet"
 
 echo "✅ Projet initialisé avec succès."
-
