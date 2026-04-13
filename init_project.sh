@@ -1720,6 +1720,6 @@ EOF
 # 17. Premier Commit
 echo "📦 Premier commit..."
 git add .
-git commit -m "Initialisation du projet"
+git commit -m "feat(init_project): initialisation du dépôt projet"
 
 echo "✅ Projet initialisé avec succès."
