@@ -25,9 +25,9 @@ Ce document explique comment participer efficacement au projet.
 
 Nous utilisons des templates structurés pour garder le projet organisé :
 
+- **Milestone** → `.github/MILESTONE_TEMPLATE.md`
 - **Rédaction / Relecture / Correction** → `.github/ISSUE_TEMPLATE/`
 - **Pull Request** → `.github/PULL_REQUEST_TEMPLATE.md`
-- **Milestone** → `.github/MILESTONE_TEMPLATE.md`
 
 **Toujours** créer :
 - un `milestone` pour planifier l'arrivée d'une nouvelle version du livre.
@@ -38,13 +38,13 @@ Nous utilisons des templates structurés pour garder le projet organisé :
 ## 🚀 Processus de contribution
 
 1. **Choisissez ou créez une issue** (avec le template "Rédaction")
-2. **Créez une branche** (voir [conventions de nommage](#-branches)):
+2. **Créez une branche** (voir [conventions de nommage](#branches)):
    ```bash
    git checkout -b feature/nom-de-la-section
    ```
 3. **Développez** votre section
-4. **Committez** avec des messages clairs (voir [conventions de nommage](#-commits))
-5. **Poussez** et ouvrez une **Pull Request** (voir [conventions de nommage](#-pull-requests))
+4. **Committez** avec des messages clairs (voir [conventions de nommage](#commits))
+5. **Poussez** et ouvrez une **Pull Request** (voir [conventions de nommage](#pull-requests))
 6. **Attendez la relecture**
 
 ---
@@ -53,7 +53,7 @@ Nous utilisons des templates structurés pour garder le projet organisé :
 - Utilisez toujours les macros définies dans `preamble/`
 - Indentez correctement et commentez les parties complexes
 - Évitez les commandes obsolètes (`\it`, `\bf`, etc.)
-- Respectez les conventions de nommage des fichiers LaTeX (voir [conventions de nommage](#-code-latex))
+- Respectez les conventions de nommage des fichiers LaTeX (voir [conventions de nommage](#code-latex))
 
 ---
 ## 📌 Conventions de nommage
