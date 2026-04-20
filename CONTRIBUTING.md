@@ -37,12 +37,12 @@ Nous utilisons des templates structurés pour garder le projet organisé :
 ---
 ## 🚀 Processus de contribution
 
-1. **Choisissez ou créez une issue** (avec le template "Rédaction")
+1. **Choisissez ou créez une issue** (avec le template approprié)
 2. **Créez une branche** (voir [conventions de nommage](#branches)):
    ```bash
-   git checkout -b feature/nom-de-la-section
+   git checkout -b nom-de-ma-branche
    ```
-3. **Développez** votre section
+3. **Développez** votre code
 4. **Committez** avec des messages clairs (voir [conventions de nommage](#commits))
 5. **Poussez** et ouvrez une **Pull Request** (voir [conventions de nommage](#pull-requests))
 6. **Attendez la relecture**
@@ -76,7 +76,7 @@ Nous utilisons des templates structurés pour garder le projet organisé :
   - Sous‑sous-section : sub.tex (dans chapters/.../sections/.../subs/.../subs/NN-nom-de-la-sous-sous-section/)
   - Appendice : appendix.tex (dans appendices/A-nom/)
 4. **Arborescence expliquée (extrait commenté)**
-```bash
+```
 chapters/
 └─ 02-techniques-construction/
    ├─ chapter.tex                # contient \input{chapters/02-.../sections/.../section}
@@ -281,7 +281,7 @@ gitGraph
 ---
 ## 👀 Relecture et validation
 
-- Vous pouvez demander une relecture en commentant la PR et un ou plusieurs relecteurs seront assignés
+- Vous pouvez demander une relecture en commentant la PR (avec une `issue` de relecture) et un ou plusieurs relecteurs seront assignés
 - Les corrections se font en pushant sur la même branche
 - Une PR est mergée seulement après approbation + compilation OK
 
