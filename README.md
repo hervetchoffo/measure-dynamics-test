@@ -61,7 +61,7 @@ Le PDF final est généré dans `main.pdf`.
 ---
 
 ## 📁 Structure du dépôt
-```bash
+```
 measure-dynamics-test/
 ├── main.tex                      # Point d’entrée du document
 ├── preamble/                     # Macros, packages, styles et mise en page (centralisés)

@@ -10,8 +10,10 @@
 
 ## --- BIBLIOGRAPHIE (BibTeX / Biber) ---
 *.bbl
+*.bbl-SAVE-ERROR
 *.blg
 *.bcf
+*.bcf-SAVE-ERROR
 *.run.xml
 
 ## --- INDEX, GLOSSAIRES ET LISTES (lof, lot, ist) ---

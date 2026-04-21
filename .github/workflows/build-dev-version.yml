@@ -19,13 +19,43 @@ jobs:
           fetch-depth: 1 # On n'a besoin que du commit actuel pour le hash court
 
       - name: Injection des métadonnées (version.tex)
+        id: inject
         run: |
+          # extraire dernier segment du nom de branche
+          branch="${GITHUB_REF_NAME##*/}"
+          
+          # normaliser : minuscules, remplacer groupes de caractères non autorisés par '-'
+          safe_branch="$(printf '%s' "$branch" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed -E 's/[^a-z0-9._-]+/-/g' \
+            | sed -E 's/^-+|-+$//g')"
+          
+          # tronquer si trop long (ex. 60 chars)
+          safe_branch="${safe_branch:0:60}"
+          
+          # échapper caractères spéciaux pour LaTeX
+          latex_branch="$(printf '%s' "$safe_branch" \
+            | sed -e 's/\\/\\textbackslash{}/g' \
+                  -e 's/%/\\%/g' \
+                  -e 's/_/\\_/g' \
+                  -e 's/#/\\#/g' \
+                  -e 's/&/\\&/g' \
+                  -e 's/{/\\{/g' \
+                  -e 's/}/\\}/g' \
+                  -e 's/\\$/\\$/g' \
+                  -e 's/\\^/\\^/g' \
+                  -e "s/~/\\\\textasciitilde{}/g")"
+          
+          # définir un output de step
+          echo "safe_branch=${safe_branch}" >> $GITHUB_OUTPUT
+          
+          # écrire version.tex
           echo "\\newcommand{\\BookVersion}{working-copy}" > version.tex
-          echo "\\newcommand{\\BookBranch}{${GITHUB_REF_NAME}}" >> version.tex
+          echo "\\newcommand{\\BookBranch}{${latex_branch}}" >> version.tex
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
-          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction. Suggestion via GitHub.}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
@@ -45,7 +75,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Le nom inclut la branche et le run_id pour être unique
-          name: dev-pdf-${{ github.ref_name }}-${{ github.run_id }}
+          name: dev-pdf-${{ steps.inject.outputs.safe_branch }}-${{ github.run_id }}
           path: main.pdf
 
       - name: Cleanup old artifacts (Keep last 5 for this branch)
@@ -53,7 +83,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const branchName = "${{ github.ref_name }}";
+            const branchName = "${{ steps.inject.outputs.safe_branch }}";
             const prefix = `dev-pdf-${branchName}-`;
 
             // 1. Récupérer les artefacts du dépôt

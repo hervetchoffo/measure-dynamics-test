@@ -2,31 +2,47 @@
 
 # ==============================================================================
 # Script d'initialisation : Projet LaTeX "Measure & Dynamics"
-# Configuration : Linux Mint / VS Code / Git
+# Environnement : Linux Mint / VS Code / Git
 # ==============================================================================
-# 1. Environnement d'exécution du script
-set -e # Arrêter le script en cas d'erreur
 
-# 2. Création du dossier projet
-PROJECT=measure-dynamics-book
+# 1. Configuration du script
+set -euo pipefail  # Arrêter en cas d'erreur, vérifier les variables non définies, et les erreurs dans les pipes
 
-# On vérifie si on est déjà dans le dossier pour éviter de boucler
+# 2. Définition des variables
+PROJECT="measure-dynamics-book"
+GIT_REMOTE_URL="https://github.com/hervetchoffo/measure-dynamics-book.git"
+
+# 3. Vérification de l'environnement
+echo "🔍 Vérification de l'environnement..."
+
+# Vérifier si on est déjà dans le dossier du projet
 if [ "$(basename "$PWD")" = "$PROJECT" ]; then
-    echo "⚠️ Déjà dans le dossier projet."
-else
-    if [ -d "$PROJECT" ]; then
-        echo "❌ Le dossier $PROJECT existe déjà. Arrêt par sécurité."
+    echo "⚠️  Vous êtes déjà dans le dossier '$PROJECT'."
+
+    # Vérifier si c'est déjà un dépôt Git
+    if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+        echo "❌ Ce dossier est déjà un dépôt Git. Arrêt par sécurité."
         exit 1
     fi
-    mkdir -p $PROJECT
-    cd $PROJECT
+else
+    # Vérifier si le dossier existe déjà ailleurs
+    if [ -d "$PROJECT" ]; then
+        echo "❌ Le dossier '$PROJECT' existe déjà. Arrêt par sécurité."
+        exit 1
+    fi
+
+    # Créer le dossier et y entrer
+    echo "📁 Création du dossier '$PROJECT'..."
+    mkdir -p "$PROJECT"
+    cd "$PROJECT" || exit 1
 fi
 
-# 3. Initialisation Git et .gitignore
-echo "📁 Configuration de Git..."
-git init -q # initialisation
-git branch -M main # vérification qu'il s'agit bien la branche s'appelle bien 'main' (standard GitHub actuel)
-git remote add origin https://github.com/hervetchoffo/measure-dynamics-book.git # ajout de l'adresse du dépôt distant
+# 4. Initialisation Git
+echo "🔧 Configuration de Git..."
+git init -q
+git branch -M main  # Renommer la branche par défaut en 'main'
+git remote add origin "$GIT_REMOTE_URL"  # Ajouter le dépôt distant
+echo "📝 Création du fichier .gitignore pour LaTeX..."
 cat <<'EOF' > .gitignore
 ## --- CORE LATEX (Fichiers auxiliaires de base) ---
 *.aux
@@ -40,8 +56,10 @@ cat <<'EOF' > .gitignore
 
 ## --- BIBLIOGRAPHIE (BibTeX / Biber) ---
 *.bbl
+*.bbl-SAVE-ERROR
 *.blg
 *.bcf
+*.bcf-SAVE-ERROR
 *.run.xml
 
 ## --- INDEX, GLOSSAIRES ET LISTES (lof, lot, ist) ---
@@ -76,7 +94,7 @@ pythontex-files-*/
 version.tex
 EOF
 
-# 4. Création de l'arborescence complète
+# 5. Création de l'arborescence complète
 echo "📁 Création de l'arborescence..."
 
 # -----------------------
@@ -88,10 +106,11 @@ mkdir -p \
   chapters \
   appendices \
   bibliography \
+  .github/ISSUE_TEMPLATE \
   .github/workflows \
   site
 
-touch main.tex README.md
+touch main.tex README.md CONTRIBUTING.md
 
 # -----------------------
 # Préambule
@@ -110,37 +129,223 @@ touch frontmatter/introduction/introduction.tex
 # -----------------------
 # Chapitre 1
 # -----------------------
-mkdir -p chapters/chapter1_espaces_mesures/section1{A_espaces_mesurables,B_mesures_images,C_classe_monotone,D_espaces_standards,E_pathologies}
+mkdir -p chapters/01-espaces-mesures/sections/{01-espaces-mesurables,02-mesures-images,03-classe-monotone,04-espaces-standards,05-pathologies}
 
-touch chapters/chapter1_espaces_mesures/chapter1.tex
-touch chapters/chapter1_espaces_mesures/section1{A_espaces_mesurables/section1A,B_mesures_images/section1B,C_classe_monotone/section1C,D_espaces_standards/section1D,E_pathologies/section1E}.tex
+cat <<'EOF' > chapters/01-espaces-mesures/chapter.tex
+\chapter{Espaces mesurés}
+
+\input{chapters/01-espaces-mesures/sections/01-espaces-mesurables/section}
+\input{chapters/01-espaces-mesures/sections/02-mesures-images/section}
+\input{chapters/01-espaces-mesures/sections/03-classe-monotone/section}
+\input{chapters/01-espaces-mesures/sections/04-espaces-standards/section}
+\input{chapters/01-espaces-mesures/sections/05-pathologies/section}
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/01-espaces-mesurables/section.tex
+\section{Espaces mesurables}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/02-mesures-images/section.tex
+\section{Mesures images et mesures invariantes}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/03-classe-monotone/section.tex
+\section{Lemme de la classe monotone}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/04-espaces-standards/section.tex
+\section{Espaces mesurables standards}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/01-espaces-mesures/sections/05-pathologies/section.tex
+\section{Pathologies classiques}
+Contenu à rédiger.
+EOF
 
 # -----------------------
 # Chapitre 2
 # -----------------------
-mkdir -p chapters/chapter2_construction_mesures/{section2A_caratheodory,section2B_riesz_markov/{part2B1_integration,part2B2_Lp,part2B3_riesz_markov},section2C_produit_desintegration/{part2C1_produit,part2C2_kolmogorov,part2C3_rokhlin}}
+mkdir -p chapters/02-techniques-construction/sections/{01-caratheodory,02-riesz-markov/subs/{01-integration,02-lp,03-riesz-markov},03-produit-desintegration/subs/{01-produit-fini,02-kolmogorov,03-rokhlin}}
 
-touch chapters/chapter2_construction_mesures/chapter2.tex
-touch chapters/chapter2_construction_mesures/section2A_caratheodory/section2A.tex
-touch chapters/chapter2_construction_mesures/section2B_riesz_markov/{section2B,part2B1_integration/part2B1,part2B2_Lp/part2B2,part2B3_riesz_markov/part2B3}.tex
-touch chapters/chapter2_construction_mesures/section2C_produit_desintegration/{section2C,part2C1_produit/part2C1,part2C2_kolmogorov/part2C2,part2C3_rokhlin/part2C3}.tex
+cat <<'EOF' > chapters/02-techniques-construction/chapter.tex
+\chapter{Techniques de construction des mesures}
+
+\input{chapters/02-techniques-construction/sections/01-caratheodory/section}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/section}
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/section}
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/01-caratheodory/section.tex
+\section{Extension de Carathéodory}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/section.tex
+\section{Représentation de Riesz--Markov}
+
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/01-integration/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/02-lp/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/03-riesz-markov/sub}
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/subs/01-integration/sub.tex
+\subsection{L'intégration}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/subs/02-lp/sub.tex
+\subsection{Les espaces \(L^p\)}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/02-riesz-markov/subs/03-riesz-markov/sub.tex
+\subsection{Théorème de représentation de Riesz--Markov}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/section.tex
+\section{Produit et désintégration}
+
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/subs/01-produit-fini/sub}
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/subs/02-kolmogorov/sub}
+\input{chapters/02-techniques-construction/sections/03-produit-desintegration/subs/03-rokhlin/sub}
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/subs/01-produit-fini/sub.tex
+\subsection{Produit fini d'espaces mesurés}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/subs/02-kolmogorov/sub.tex
+\subsection{Théorème d'extension de Kolmogorov}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/02-techniques-construction/sections/03-produit-desintegration/subs/03-rokhlin/sub.tex
+\subsection{Théorème de désintégration de Rokhlin}
+Contenu à rédiger.
+EOF
 
 # -----------------------
 # Chapitre 3
 # -----------------------
-mkdir -p chapters/chapter3_theorie_ergodique/{section3A_dynamique/{part3A1_ergodicite,part3A2_decomposition},section3B_convergence/{part3B1_von_neumann,part3B2_maximal,part3B3_birkhoff,part3B4_folner},section3C_applications/{part3C1_nombres,part3C2_information,part3C3_jeux,part3C4_IA}}
+mkdir -p chapters/03-theorie-ergodique/sections/{01-dynamique-ergodique/subs/{01-ergodicite,02-decomposition},02-convergence-ergodique/subs/{01-von-neumann,02-maximal,03-birkhoff,04-folner},03-applications/subs/{01-nombres,02-information,03-jeux,04-ia}}
 
-touch chapters/chapter3_theorie_ergodique/chapter3.tex
-touch chapters/chapter3_theorie_ergodique/section3A_dynamique/{section3A,part3A1_ergodicite/part3A1,part3A2_decomposition/part3A2}.tex
-touch chapters/chapter3_theorie_ergodique/section3B_convergence/{section3B,part3B1_von_neumann/part3B1,part3B2_maximal/part3B2,part3B3_birkhoff/part3B3,part3B4_folner/part3B4}.tex
-touch chapters/chapter3_theorie_ergodique/section3C_applications/{section3C,part3C1_nombres/part3C1,part3C2_information/part3C2,part3C3_jeux/part3C3,part3C4_IA/part3C4}.tex
+cat <<'EOF' > chapters/03-theorie-ergodique/chapter.tex
+\chapter{Théorie ergodique et applications}
+
+\input{chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/section}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/section}
+\input{chapters/03-theorie-ergodique/sections/03-applications/section}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/section.tex
+\section{Dynamique ergodique}
+
+\input{chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/01-ergodicite/sub}
+\input{chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/02-decomposition/sub}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/01-ergodicite/sub.tex
+\subsection{L'ergodicité}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/01-dynamique-ergodique/subs/02-decomposition/sub.tex
+\subsection{Théorème de décomposition ergodique}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/section.tex
+\section{Théorèmes de convergence ergodique}
+
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/01-von-neumann/sub}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/02-maximal/sub}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/03-birkhoff/sub}
+\input{chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/04-folner/sub}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/01-von-neumann/sub.tex
+\subsection{Théorème ergodique moyen (Von Neumann)}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/02-maximal/sub.tex
+\subsection{Théorème ergodique maximal}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/03-birkhoff/sub.tex
+\subsection{Théorème ergodique ponctuel (Birkhoff)}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/02-convergence-ergodique/subs/04-folner/sub.tex
+\subsection{Les suites de Folner}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/section.tex
+\section{Applications de la théorie ergodique}
+
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/01-nombres/sub}
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/02-information/sub}
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/03-jeux/sub}
+\input{chapters/03-theorie-ergodique/sections/03-applications/subs/04-ia/sub}
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/01-nombres/sub.tex
+\subsection{L'ergodicité en théorie des nombres}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/02-information/sub.tex
+\subsection{L'ergodicité en théorie de l'information}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/03-jeux/sub.tex
+\subsection{L'ergodicité en théorie des jeux}
+Contenu à rédiger.
+EOF
+
+cat <<'EOF' > chapters/03-theorie-ergodique/sections/03-applications/subs/04-ia/sub.tex
+\subsection{L'ergodicité en intelligence artificielle}
+Contenu à rédiger.
+EOF
 
 # -----------------------
 # Appendices
 # -----------------------
-mkdir -p appendices/appendix{A_axiome_choix,B_quotient,C_galois_poincare,D_riemann_lebesgue,E_leibniz_schwartz,F_fonctions_elementaires}
+mkdir -p appendices/{A-axiome-choix,B-quotient,C-galois-poincare,D-riemann-lebesgue,E-leibniz-schwartz,F-fonctions-elementaires}
 
-touch appendices/appendix{A_axiome_choix/appendixA,B_quotient/appendixB,C_galois_poincare/appendixC,D_riemann_lebesgue/appendixD,E_leibniz_schwartz/appendixE,F_fonctions_elementaires/appendixF}.tex
+cat <<'EOF' > appendices/A-axiome-choix/appendix.tex
+\chapter{Omniprésence de l'axiome du choix}
+EOF
+
+cat <<'EOF' > appendices/B-quotient/appendix.tex
+\chapter{Omniprésence du quotient}
+EOF
+
+cat <<'EOF' > appendices/C-galois-poincare/appendix.tex
+\chapter{De Galois à Poincaré}
+EOF
+
+cat <<'EOF' > appendices/D-riemann-lebesgue/appendix.tex
+\chapter{De Riemann à Lebesgue}
+EOF
+
+cat <<'EOF' > appendices/E-leibniz-schwartz/appendix.tex
+\chapter{De Leibniz à Schwartz}
+EOF
+
+cat <<'EOF' > appendices/F-fonctions-elementaires/appendix.tex
+\chapter{Des fonctions élémentaires}
+EOF
 
 # -----------------------
 # Bibliographie
@@ -157,7 +362,7 @@ touch site/roadmap.md
 touch site/changelog.md
 touch site/_config.yml
 
-# 5. Génération du fichier main.tex
+# 6. Génération du fichier main.tex
 echo "📝 Génération du fichier main.tex..."
 cat <<'EOF' > main.tex
 \documentclass[11pt,a4paper]{book}
@@ -185,32 +390,33 @@ cat <<'EOF' > main.tex
 % ========================
 \mainmatter
 
-\input{chapters/chapter1_espaces_mesures/chapter1}
-\input{chapters/chapter2_construction_mesures/chapter2}
-\input{chapters/chapter3_theorie_ergodique/chapter3}
+% Chapitres
+\input{chapters/01-espaces-mesures/chapter}
+\input{chapters/02-techniques-construction/chapter}
+\input{chapters/03-theorie-ergodique/chapter}
 
-% ========================
 % Appendices
-% ========================
 \appendix
-\input{appendices/appendixA_axiome_choix/appendixA}
-\input{appendices/appendixB_quotient/appendixB}
-\input{appendices/appendixC_galois_poincare/appendixC}
-\input{appendices/appendixD_riemann_lebesgue/appendixD}
-\input{appendices/appendixE_leibniz_schwartz/appendixE}
-\input{appendices/appendixF_fonctions_elementaires/appendixF}
+\input{appendices/A-axiome-choix/appendix}
+\input{appendices/B-quotient/appendix}
+\input{appendices/C-galois-poincare/appendix}
+\input{appendices/D-riemann-lebesgue/appendix}
+\input{appendices/E-leibniz-schwartz/appendix}
+\input{appendices/F-fonctions-elementaires/appendix}
 
 % ========================
-% Bibliography
+% Back matter
 % ========================
 \backmatter
+
+% Bibliography
 \nocite{*} % <--- Force l'affichage de TOUTES les entrées du fichier .bib
 \input{bibliography/bibliography}
 
 \end{document}
 EOF
 
-# 6. Génération du fichier packages.tex
+# 7. Génération du fichier packages.tex
 echo "📝 Génération du fichier packages.tex..."
 cat <<'EOF' > preamble/packages.tex
 % --- Encodage et Langue ---
@@ -258,7 +464,7 @@ cat <<'EOF' > preamble/packages.tex
 \addbibresource{bibliography/references.bib}
 EOF
 
-# 7. Génération du fichier theoremstyle.tex
+# 8. Génération du fichier theoremstyle.tex
 echo "📝 Génération du fichier theoremstyle.tex..."
 cat <<'EOF' > preamble/theoremstyle.tex
 % --- Style pour les Théorèmes et résultats (Italique) ---
@@ -290,7 +496,7 @@ cat <<'EOF' > preamble/theoremstyle.tex
 \crefname{lemma}{lemme}{lemmes}
 EOF
 
-# 8. Génération du fichier layout.tex
+# 9. Génération du fichier layout.tex
 echo "📝 Génération du fichier layout.tex..."
 cat <<'EOF' > preamble/layout.tex
 % --- Numérotation et Table des matières ---
@@ -308,7 +514,7 @@ cat <<'EOF' > preamble/layout.tex
 \linespread{1.05}
 EOF
 
-# 9. Génération du fichier macros.tex
+# 10. Génération du fichier macros.tex
 echo "📝 Génération du fichier macros.tex..."
 cat <<'EOF' > preamble/macros.tex
 % ==================================================
@@ -318,8 +524,8 @@ cat <<'EOF' > preamble/macros.tex
 \newcommand{\BookSubtitle}{Fondements, constructions et applications ergodiques}
 \newcommand{\BookAuthor}{TCHOFFO SONWA Hervé}
 \newcommand{\BookRepository}{https://github.com/hervetchoffo/measure-dynamics-book}
-\newcommand{\BookLicense}{Creative Commons BY-NC-SA 4.0}
-\newcommand{\BookLicenseUrl}{https://creativecommons.org/licenses/by-nc-sa/4.0/}
+\newcommand{\BookLicense}{Creative Commons CC BY-SA 4.0}
+\newcommand{\BookLicenseUrl}{https://creativecommons.org/licenses/by-sa/4.0/}
 
 % =========================
 % Métadonnées CI / CD
@@ -367,7 +573,7 @@ cat <<'EOF' > preamble/macros.tex
 \DeclareMathOperator{\diam}{diam}
 EOF
 
-# 10. Génération du fichier titlepage.tex
+# 11. Génération du fichier titlepage.tex
 echo "📝 Génération du fichier titlepage.tex..."
 cat <<'EOF' > frontmatter/titlepage.tex
 \begin{titlepage}
@@ -419,7 +625,7 @@ cat <<'EOF' > frontmatter/titlepage.tex
 \cleardoublepage
 EOF
 
-# 11. Génération du fichier introduction.tex
+# 12. Génération du fichier introduction.tex
 echo "📝 Génération du fichier introduction.tex..."
 cat <<'EOF' > frontmatter/introduction/introduction.tex
 \starredchapter{Introduction}
@@ -427,7 +633,7 @@ cat <<'EOF' > frontmatter/introduction/introduction.tex
 Ce livre est consacré à la théorie de la mesure et à ses interactions profondes avec les systèmes dynamiques et la théorie ergodique.
 EOF
 
-# 12. Génération du fichier bibliography.tex
+# 13. Génération du fichier bibliography.tex
 echo "📝 Génération du fichier bibliography.tex..."
 cat <<'EOF' > bibliography/bibliography.tex
 \starredchapter{Bibliographie}
@@ -435,7 +641,7 @@ cat <<'EOF' > bibliography/bibliography.tex
 \printbibliography[heading=none]
 EOF
 
-# 13. Initialisation du fichier references.bib
+# 14. Initialisation du fichier references.bib
 echo "📝 Initialisation du fichier references.bib..."
 cat <<'EOF' > bibliography/references.bib
 @book{Cohn2013,
@@ -468,18 +674,6 @@ cat <<'EOF' > bibliography/references.bib
 }
 EOF
 
-# 14. Initialisation des chapitres et des annexes
-echo "📝 Initialisation des chapitres et des annexes..."
-echo "\chapter{Espaces mesurés}" > chapters/chapter1_espaces_mesures/chapter1.tex
-echo "\chapter{Techniques de construction des mesures}" > chapters/chapter2_construction_mesures/chapter2.tex
-echo "\chapter{Théorie ergodique et applications}" > chapters/chapter3_theorie_ergodique/chapter3.tex
-echo "\chapter{L’omniprésence de l’axiome du choix}" > appendices/appendixA_axiome_choix/appendixA.tex
-echo "\chapter{L'omniprésence du quotient}" > appendices/appendixB_quotient/appendixB.tex
-echo "\chapter{De Galois à Poincaré}" > appendices/appendixC_galois_poincare/appendixC.tex
-echo "\chapter{De Riemann à Lebesgue}" > appendices/appendixD_riemann_lebesgue/appendixD.tex
-echo "\chapter{De Leibniz à Schwartz}" > appendices/appendixE_leibniz_schwartz/appendixE.tex
-echo "\chapter{Les fonctions élémentaires}" > appendices/appendixF_fonctions_elementaires/appendixF.tex
-
 # 15. Création des workflows GitHub
 # 15.1. Génération du fichier build-dev-version.yml
 echo "📝 Génération du workflow Build PDF (dev-version)..."
@@ -505,13 +699,43 @@ jobs:
           fetch-depth: 1 # On n'a besoin que du commit actuel pour le hash court
 
       - name: Injection des métadonnées (version.tex)
+        id: inject
         run: |
+          # extraire dernier segment du nom de branche
+          branch="${GITHUB_REF_NAME##*/}"
+          
+          # normaliser : minuscules, remplacer groupes de caractères non autorisés par '-'
+          safe_branch="$(printf '%s' "$branch" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed -E 's/[^a-z0-9._-]+/-/g' \
+            | sed -E 's/^-+|-+$//g')"
+          
+          # tronquer si trop long (ex. 60 chars)
+          safe_branch="${safe_branch:0:60}"
+          
+          # échapper caractères spéciaux pour LaTeX
+          latex_branch="$(printf '%s' "$safe_branch" \
+            | sed -e 's/\\/\\textbackslash{}/g' \
+                  -e 's/%/\\%/g' \
+                  -e 's/_/\\_/g' \
+                  -e 's/#/\\#/g' \
+                  -e 's/&/\\&/g' \
+                  -e 's/{/\\{/g' \
+                  -e 's/}/\\}/g' \
+                  -e 's/\\$/\\$/g' \
+                  -e 's/\\^/\\^/g' \
+                  -e "s/~/\\\\textasciitilde{}/g")"
+          
+          # définir un output de step
+          echo "safe_branch=${safe_branch}" >> $GITHUB_OUTPUT
+          
+          # écrire version.tex
           echo "\\newcommand{\\BookVersion}{working-copy}" > version.tex
-          echo "\\newcommand{\\BookBranch}{${GITHUB_REF_NAME}}" >> version.tex
+          echo "\\newcommand{\\BookBranch}{${latex_branch}}" >> version.tex
           echo "\\newcommand{\\BookCommit}{$(git rev-parse --short HEAD)}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de travail}" >> version.tex
-          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction. Suggestion via GitHub.}" >> version.tex
+          echo "\\newcommand{\\BookDisclaimer}{Cet ouvrage est en cours de rédaction et peut contenir des erreurs ou des résultats incomplets. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub.}" >> version.tex
 
       - name: Set up LaTeX and compile PDF
         uses: xu-cheng/latex-action@v3
@@ -531,7 +755,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Le nom inclut la branche et le run_id pour être unique
-          name: dev-pdf-${{ github.ref_name }}-${{ github.run_id }}
+          name: dev-pdf-${{ steps.inject.outputs.safe_branch }}-${{ github.run_id }}
           path: main.pdf
 
       - name: Cleanup old artifacts (Keep last 5 for this branch)
@@ -539,7 +763,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const branchName = "${{ github.ref_name }}";
+            const branchName = "${{ steps.inject.outputs.safe_branch }}";
             const prefix = `dev-pdf-${branchName}-`;
 
             // 1. Récupérer les artefacts du dépôt
@@ -602,9 +826,40 @@ jobs:
           echo "CURRENT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Injection des métadonnées (version.tex)
+        id: inject
         run: |
+          # extraire dernier segment du nom de branche
+          branch="${{ github.head_ref }}" # récupérer la valeur fournie par Actions dans une variable shell
+          branch="${branch##*/}"
+          
+          # normaliser : minuscules, remplacer groupes de caractères non autorisés par '-'
+          safe_branch="$(printf '%s' "$branch" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed -E 's/[^a-z0-9._-]+/-/g' \
+            | sed -E 's/^-+|-+$//g')"
+          
+          # tronquer si trop long (ex. 60 chars)
+          safe_branch="${safe_branch:0:60}"
+          
+          # échapper caractères spéciaux pour LaTeX
+          latex_branch="$(printf '%s' "$safe_branch" \
+            | sed -e 's/\\/\\textbackslash{}/g' \
+                  -e 's/%/\\%/g' \
+                  -e 's/_/\\_/g' \
+                  -e 's/#/\\#/g' \
+                  -e 's/&/\\&/g' \
+                  -e 's/{/\\{/g' \
+                  -e 's/}/\\}/g' \
+                  -e 's/\\$/\\$/g' \
+                  -e 's/\\^/\\^/g' \
+                  -e "s/~/\\\\textasciitilde{}/g")"
+          
+          # définir un output de step
+          echo "safe_branch=${safe_branch}" >> $GITHUB_OUTPUT
+          
+          # écrire version.tex
           echo "\\newcommand{\\BookVersion}{review-copy}" > version.tex
-          echo "\\newcommand{\\BookBranch}{${{ github.head_ref }}}" >> version.tex
+          echo "\\newcommand{\\BookBranch}{${latex_branch}}" >> version.tex
           echo "\\newcommand{\\BookCommit}{${{ env.CURRENT_COMMIT }}}" >> version.tex
           echo "\\newcommand{\\BookDate}{$(date +'%d/%m/%Y')}" >> version.tex
           echo "\\newcommand{\\BookStatus}{Version de relecture}" >> version.tex
@@ -629,7 +884,8 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const branchName = "${{ github.head_ref }}";
+            const branchName = "${{ steps.inject.outputs.safe_branch }}";
+            const prefix = `review-pdf-${branchName}-`;
             
             const response = await github.rest.actions.listArtifactsForRepo({
               owner,
@@ -639,8 +895,7 @@ jobs:
             // On filtre pour ne garder que les artefacts de cette branche
             // en excluant celui du run actuel par sécurité
             const oldArtifacts = response.data.artifacts.filter(art => 
-              art.name.startsWith(`review-pdf-${branchName}`) &&
-              art.workflow_run.id !== context.runId
+              art.name.startsWith(prefix)
             );
 
             for (const artifact of oldArtifacts) {
@@ -655,7 +910,7 @@ jobs:
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: review-pdf-${{ github.head_ref }}-${{ github.run_id }}
+          name: review-pdf-${{ steps.inject.outputs.safe_branch }}-${{ github.run_id }}
           path: main.pdf
 
       - name: Notify reviewers
@@ -666,11 +921,14 @@ jobs:
             const pull_number = context.issue.number;
             const artifact_url = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
             
+            const branch = "${{ github.head_ref }}";
+            const commit = "${{ env.CURRENT_COMMIT }}";
+            
             const comment_header = "📄 **Nouveau PDF disponible pour relecture**";
             const body = `
             ${comment_header}
-            - **Branche** : \`${{ github.head_ref }}\`
-            - **Commit** : \`${{ env.CURRENT_COMMIT }}\`
+            - **Branche** : \`${branch}\`
+            - **Commit** : \`${commit}\`
             - **Dernière mise à jour** : ${new Date().toLocaleString('fr-FR')}
 
             📥 **[Télécharger le PDF ici](${artifact_url})**
@@ -720,12 +978,10 @@ name: Build Release PDF (Tags)
 on:
   push:
     tags:
-      # Déclenchement sur v1.0.0, v1.2.3-beta, etc.
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
-      - 'v[0-9]+.[0-9]+.[0-9]+-beta'
-      - 'v[0-9]+.[0-9]+.[0-9]+-rc'
-      - 'v[0-9]+.[0-9]+.[0-9]+-final'
+      # Déclenchement sur version RC, stable & d'archivage.
+      - 'v[0-9]+\.[0-9]+\.[0-9]+'             # v1.2.3 (stable)
+      - 'v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+'  # v1.2.3-rc.1 (release candidate)
+      - 'v[0-9]+\.[0-9]+\.[0-9]+-final'       # v1.2.3-final (archivage)
 
 jobs:
   build-release:
@@ -751,11 +1007,11 @@ jobs:
       - name: Verify Tag format
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
-          # On vérifie si le tag est de la forme vX.Y.Z ou vX.Y.Z-alpha|beta|rc|final
-          REGEX="^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(alpha|beta|rc|final))?$"
+          # On vérifie si le tag est de la forme vX.Y.Z, vX.Y.Z-rc.N ou vX.Y.Z-final
+          REGEX="^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-rc\.[1-9][0-9]*|-final)?$"
           if [[ ! "$TAG_NAME" =~ $REGEX ]]; then
             echo "❌ Tag invalide : $TAG_NAME"
-            echo "Format attendu : vX.Y.Z ou vX.Y.Z[-[alpha|beta|rc|final]]"
+            echo "Format attendu : vX.Y.Z, vX.Y.Z-rc.N ou vX.Y.Z-final"
             exit 1
           fi
           echo "✅ Vérification réussie : $TAG_NAME est bien au format attendu."
@@ -776,18 +1032,16 @@ jobs:
           fi
 
           # 2. Détermination du statut pour LaTeX
-          if [[ "$TAG_NAME" == *"alpha"* ]]; then
-            STATUS="Version Alpha"
-            DISCLAIMER="Un ou plusieurs chapitre(s) ont été relu(s) et validé(s) mais le livre est actuelement incomplet. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
-          elif [[ "$TAG_NAME" == *"beta"* ]]; then
-            STATUS="Version Bêta"
-            DISCLAIMER="Tous les chapitres de ce livre sont actuellement présents mais une relecture globale est nécessaire. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
-          elif [[ "$TAG_NAME" == *"rc"* ]]; then
-            STATUS="Release Candidate"
-            DISCLAIMER="Version candidate à la publication stable et finalisée de l'ouvrage. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          if [[ "$TAG_NAME" == *"-rc."* ]]; then
+            RC_NUM=$(echo "$TAG_NAME" | grep -oP '(?<=-rc\.)\d+')
+            STATUS="Release Candidate ${RC_NUM}"
+            DISCLAIMER="Version candidate n°${RC_NUM} à la publication stable de l'ouvrage. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          elif [[ "$TAG_NAME" == *"-final" ]]; then
+            STATUS="Édition Finale"
+            DISCLAIMER="Livre complet, relu et archivé. Cette édition ne fera l'objet d'aucune modification ultérieure."
           else
-            STATUS="Édition Officielle"
-            DISCLAIMER="Version stable et finalisée de l'ouvrage."
+            STATUS="Édition Stable"
+            DISCLAIMER="Un ou plusieurs chapitres ou sections ont été entièrement rédigés et relus mais le livre est peut être incomplet. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
           fi
           
           # 3. Export vers GITHUB_OUTPUT (Gestion multi-lignes pour le changelog)
@@ -843,8 +1097,8 @@ jobs:
             *(Généré automatiquement par GitHub ci-dessous)*
           generate_release_notes: true # Ajoute automatiquement les contributeurs et PRs fusionnées
           draft: false
-          # Marque comme "Pre-release" si le tag contient alpha, beta ou rc
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          # Marque comme "Pre-release" si le tag est une RC (ex. v1.2.3-rc.1)
+          prerelease: ${{ contains(github.ref_name, 'rc') }}
 EOF
 
 # 15.4. Génération du fichier auto-close-issues.yml
@@ -1132,7 +1386,7 @@ EOF
 
 # 16.6. Génération du fichier README.md
 echo "📝 Génération du fichier README ..."
-cat <<'EOF' > .github/README.md
+cat <<'EOF' > README.md
 # 📘 Théorie de la mesure et systèmes dynamiques
 
 **Un ouvrage de référence sur la théorie de la mesure, les systèmes dynamiques et la théorie ergodique**
@@ -1196,7 +1450,7 @@ Le PDF final est généré dans `main.pdf`.
 ---
 
 ## 📁 Structure du dépôt
-```bash
+```
 measure-dynamics-book/
 ├── main.tex                      # Point d’entrée du document
 ├── preamble/                     # Macros, packages, styles et mise en page (centralisés)
@@ -1262,7 +1516,7 @@ EOF
 
 # 16.7. Génération du fichier CONTRIBUTING.md
 echo "📝 Génération du fichier CONTRIBUTING ..."
-cat <<'EOF' > .github/CONTRIBUTING.md
+cat <<'EOF' > CONTRIBUTING.md
 # 👥 Comment contribuer au projet
 
 Merci de votre intérêt pour **Théorie de la mesure et systèmes dynamiques** !
@@ -1273,8 +1527,8 @@ Ce document explique comment participer efficacement au projet.
 - [Avant de commencer](#-avant-de-commencer)
 - [Utiliser les templates](#%EF%B8%8F-utiliser-les-templates)
 - [Processus de contribution](#-processus-de-contribution)
-- [Conventions de nommage](#-conventions-de-nommage)
 - [Règles LaTeX](#-règles-latex)
+- [Conventions de nommage](#-conventions-de-nommage)
 - [Relecture et validation](#-relecture-et-validation)
 - [Licence](#-licence)
 
@@ -1282,7 +1536,7 @@ Ce document explique comment participer efficacement au projet.
 ## 📝 Avant de commencer
 
 1. Lisez le [`README.md`](README.md)
-2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-test/milestones)** en cours
+2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-book/milestones)** en cours
 3. Vérifiez qu’il n’existe pas déjà une issue pour votre idée
 
 ---
@@ -1290,65 +1544,263 @@ Ce document explique comment participer efficacement au projet.
 
 Nous utilisons des templates structurés pour garder le projet organisé :
 
+- **Milestone** → `.github/MILESTONE_TEMPLATE.md`
 - **Rédaction / Relecture / Correction** → `.github/ISSUE_TEMPLATE/`
 - **Pull Request** → `.github/PULL_REQUEST_TEMPLATE.md`
-- **Milestone** → `.github/MILESTONE_TEMPLATE.md`
 
-**Toujours** créer une issue avant de commencer à coder.
+**Toujours** créer :
+- un `milestone` pour planifier l'arrivée d'une nouvelle version du livre.
+- une `issue` avant de commencer à coder.
+- une `Pull Request` pour demander la relecture, la validation et l'intégration de code.
 
 ---
 ## 🚀 Processus de contribution
 
-1. **Choisissez ou créez une issue** (avec le template "Rédaction")
-2. **Créez une branche** :
+1. **Choisissez ou créez une issue** (avec le template approprié)
+2. **Créez une branche** (voir [conventions de nommage](#branches)):
    ```bash
-   git checkout -b feature/nom-de-la-section
+   git checkout -b nom-de-ma-branche
    ```
-3. **Développez** votre section
-4. **Committez** avec des messages clairs (voir conventions ci-dessous)
-5. **Poussez** et ouvrez une **Pull Request** (elle doit contenir `Fixes #XX`)
+3. **Développez** votre code
+4. **Committez** avec des messages clairs (voir [conventions de nommage](#commits))
+5. **Poussez** et ouvrez une **Pull Request** (voir [conventions de nommage](#pull-requests))
 6. **Attendez la relecture**
-
----
-## 📌 Conventions de nommage
-
-### Branches
-- `feature/nom-court-de-la-section`
-- `fix/bug-xxx`
-- `doc/amélioration-readme`
-
-### Commits (style Conventional Commits)
-```bash
-feat: rédaction de la section 3.2
-fix: correction du théorème 4.1
-docs: mise à jour du README
-chore: mise à jour du template
-```
-
-### Pull Requests
-- Titre clair : `Section 3.2 – Théorème ergodique`
-- Description remplie avec le template
-- Doit contenir `Fixes #XX` ou `Closes #XX`
 
 ---
 ## 📖 Règles LaTeX
 
 - Utilisez toujours les macros définies dans `preamble/`
-- Un fichier par chapitre/sous-section quand c’est possible
-- Nommez les fichiers en kebab-case : `chapitre-3-systemes-dynamiques.tex`
 - Indentez correctement et commentez les parties complexes
 - Évitez les commandes obsolètes (`\it`, `\bf`, etc.)
+- Respectez les conventions de nommage des fichiers LaTeX (voir [conventions de nommage](#code-latex))
+
+---
+## 📌 Conventions de nommage
+
+### Code LaTeX
+
+1. **Principes généraux**
+  - Approche REST-like pour représenter les ressources LaTeX (`chapter`, `section`, `subsection`, `subsubsection`)
+  - Arborescence modulaire et hiérarchique grâce à la commande LaTeX `\input{...}` avec des **chemins complets** depuis la racine
+  - Style de nommage : kebab-case (tirets), minuscules, pas d’espaces, pas d’accents dans les noms de fichiers/dossiers
+2. **Nommage des dossiers**
+  - Chapitres : NN-nom-du-chapitre placé sous le dossier `chapters` avec `NN-` préfixe d’ordre numérique  (ex. `chapters/02-techniques-construction`) 
+  - Sections : NN-nom-de-la-section placé sous un dossier `sections` (ex. `chapters/02-techniques-construction/sections/02-riesz-markov`)
+  - Sous‑sections (resp. Sous-sous-section): NN-nom-de-la-sous-section placé sous un dossier `subs` de section (resp. sous-section)
+  - Appendices : A-nom, B-nom, … (lettres pour distinguer des chapitres) et placé sous le dossier `appendices`
+3. **Nommage des fichiers**
+  - Chapitre : chapter.tex (dans chapters/NN-nom-du-chapitre/)
+  - Section : section.tex (dans chapters/.../sections/NN-nom-de-la-section/)
+  - Sous‑section : sub.tex (dans chapters/.../sections/.../subs/NN-nom-de-la-sous-section/)
+  - Sous‑sous-section : sub.tex (dans chapters/.../sections/.../subs/.../subs/NN-nom-de-la-sous-sous-section/)
+  - Appendice : appendix.tex (dans appendices/A-nom/)
+4. **Arborescence expliquée (extrait commenté)**
+```
+chapters/
+└─ 02-techniques-construction/
+   ├─ chapter.tex                # contient \input{chapters/02-.../sections/.../section}
+   └─ sections/
+      ├─ 02-riesz-markov/
+      │  ├─ section.tex          # contient \input{chapters/02-.../sections/02-.../subs/.../sub}
+      │  └─ subs/
+      │     ├─ 01-integration/
+      │     |  └─ sub.tex
+      │     ├─ 02-lp/
+      │     |  └─ sub.tex
+      │     └─ 03-riesz-markov/
+      │        └─ sub.tex
+      └─ 03-produit-desintegration/
+         └─ section.tex
+```
+5. **Exemple de code LaTeX (section 2.2)**
+```latex
+\section{Représentation de Riesz–Markov}
+
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/01-integration/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/02-lp/sub}
+\input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/03-riesz-markov/sub}
+```
+
+### Branches
+
+1. **Principes généraux**
+  - But : rendre les branches lisibles, traçables et liées à une unité logique du dépôt (chapitre, section, sous‑section, sous-sous-section, annexe)
+  - Format : `<type>/<scope>/<short-description>` ou `<type>/<scope>` (resp. `<type>/<short-description>`) si description (resp. scope) non nécessaire
+  - Style : kebab-case pour le `scope` et la `short-description`, pas d’accents, pas d’espaces, minuscules
+2. **Types recommandés**
+  - release : préparation à la publication d'une version du livre
+  - feature : ajout de contenu (nouvelle annexe, chapitre, section, sous‑section, sous-sous-section)
+  - fix : correction de contenu
+  - refactor : réorganisation du code LaTeX sans changement de contenu
+  - docs : modifications de la documentation (README, CONTRIBUTING)
+  - chore : tâches d’infrastructure (templates, workflows, préambule, site web)
+3. **Bonnes pratiques**
+  - Scope obligatoire pour éditer ou corriger du contenu : inclure le chemin logique NN-nom du chapitre (ou d'annexe) puis, si pertinent, NN-nom de la section, de la sous‑section et de la sous-sous-section (ex. `feature/02-techniques-construction/02-riesz-markov/01-integration`)
+  - Longueur : garder la branche < 80 caractères si possible avec une description courte de 3 à 6 mots, explicite (ex. ajout-exemples, typo-theoreme, mise-a-jour-biblio)
+  - Ticket lié : si une issue existe, préfixer la description par le numéro `issue-NN` ou ajouter `-issue-NN` à la fin (ex. `fix/01-espaces-mesures/03-classe-monotone/issue-123-typo-theoreme`)
+4. **Exemples**
+  - `release/v1.1.0-rc.1`
+  - `feature/02-techniques-construction/02-riesz-markov/01-integration`
+  - `fix/01-espaces-mesures/03-classe-monotone/issue-123-typo-theoreme`
+  - `refactor/chapters-structure/move-sections-to-subs`
+  - `docs/contributing-update`
+  - `chore/preamble-macros-cleanup`
+
+### Commits
+
+1. **Format des messages**
+  - Style `Conventional Commits`
+  - Format message de commit simple: `<type>(<scope>): <description>`
+  - Format message de commit multi-lignes: 
+    - ligne 1) `Court résumé` (impératif, ≤50 chars): `<type>(<scope>): <short-description>`
+    - ligne 2) Ligne vide
+    - ligne 3) `Corps explicatif` (optionnel, explications détaillées; wrap à 72 chars)
+    - ligne 4) Ligne vide
+    - ligne 5) `Footer` (optionnel): `Fixes #NN`, `Refs: #NN`, `BREAKING CHANGE: <description>`
+  - Règles clés: sujet en **impératif présent**, court (≈50 caractères), scope optionnel, corps explicatif si nécessaire, footer pour référencer des issues ou indiquer des breaking changes si nécessaire
+2. **Types recommandés**
+  - feat : ajout de contenu (nouvelle annexe, chapitre, section, sous‑section, sous-sous-section)
+  - fix : correction de contenu
+  - refactor : réorganisation du code LaTeX sans changement de contenu
+  - docs : modifications de la documentation (README, CONTRIBUTING)
+  - chore : tâches d’infrastructure (templates, workflows, préambule, site web)
+3. **Bonnes pratiques**
+  - Un changement logique par commit (atomicité)
+  - Utilisez le scope pour indiquer intro/chapitre/annexe/biblio/fichier/composant
+  - Utilisez le footer pour référencer l'issue: `Fixes #NN` pour fermer, `Refs: #NN` pour lier
+4. **Commandes utiles**
+```bash
+git commit -m "<type>(<scope>): <description>" # ceci est un commit simple
+git commit -m "<type>(<scope>): <short-description>" -m "<body>" -m "<footer>" #ceci est un commit multi-lignes
+git commit -F - <<'COMMIT' #ceci aussi est un commit multi-lignes (heredoc)
+<type>(<scope>): <short-description>
+
+<body>
+
+<footer>
+COMMIT
+git commit -m $'<type>(<scope>): <short-description>\n\n<body>\n\n<footer>' #ceci est un autre commit multi-lignes (saut de ligne)
+```
+5. **Exemples**
+```bash
+git commit -m "feat(annexe-a): ajouter section sur méthodes numériques"
+git commit -m "fix(chapitre-02): corriger typo lemme 2.3"
+git commit -m "fix(chapitre-02): corriger typo lemme 2.3" -m "Correction d'une faute dans l'énoncé; ajustement mineur de la démonstration." -m "Refs: #123"
+git commit -F - <<'COMMIT'
+fix(chapitre-02): corriger typo lemme 2.3
+
+Correction détaillée...
+
+Fixes #312
+COMMIT
+git commit -m $'fix(chapitre-02): corriger typo lemme 2.3\n\nCorrection détaillée...\n\nFixes #231'
+git commit -m "refactor(preamble): regrouper macros de mise en page"
+git commit -m "docs(CONTRIBUTING): ajouter bonnes pratiques de commit"
+git commit -m "chore(ci): ajouter job latexmk pour PR"
+```
+
+### Pull Requests
+
+- Titre clair : `Section 3.2 – Théorème ergodique`
+- Description remplie avec le template
+- Doit contenir `Fixes #XX` ou `Closes #XX`
 
 **Checklist avant PR** :
-- [ ] Compilation locale réussie (`make pdf`)
-- [ ] Pas de warning LaTeX
-- [ ] Bibliographie à jour (`biber`)
-- [ ] Respect des conventions de style du projet
+- Compilation locale réussie (`make pdf`)
+- Pas de warning LaTeX
+- Bibliographie à jour (`biber`)
+- Respect des conventions de style du projet
+
+### Releases
+
+1. **Numéros de versions**
+
+   Le versionnage du livre suit une logique SemVer `MAJOR.MINOR.PATCH[-STATUS]` avec la transposition `MAJOR`/`MINOR`/`PATCH`/`STATUS` qui suit :
+
+   | SemVer | Équivalent éditorial | Exemple |
+   |--------|----------------------|---------|
+   | MAJOR | Édition du livre (refonte, réorganisation profonde) | `v2.0.0` = 2ème édition |
+   | MINOR | Ajout d'un chapitre ou d'une section | `v1.3.0` = nouveau chapitre |
+   | PATCH | Correction d'erreur, faute, reformulation mineure | `v1.3.1` = errata |
+   | STATUS | État éditorial du livre | `v1.1.0-rc.2` = 2ème version candidate à publication |
+
+2. **Cycles éditoriaux**
+
+  - Les cycles d'édition sont courts afin d'obtenir des `feedbacks` réguliers de la part des relecteurs.
+  - Le processus d'édition est allégé par la suppression des phases de pré-release `alpha` et `beta`: passage direct en `RC`.
+  - Une ou deux (tout au plus) `RC` sont suffisantes pour la publication d'une version stable de l'ouvrage.
+  - Chaque version stable du livre doit correspondre à des sections entièrement rédigées, relues et cohérentes.
+  - Certaines sections présentes dans la table des matières peuvent ne pas encore avoir été rédigées dans une version stable du livre.
+  - Une version dont le champs `STATUS` vaut `-final` exprime le fait que le livre est entièrement rédigé et prêt pour archivage.
+
+3. **Exemple de scénario éditorial (1ère édition)**
+
+   | Version | Statut | Description |
+   |---------|--------|-------------|
+   | `v1.1.0-rc.1` | 🔄 RC | Premier candidat (chapitre 1 complet) |
+   | `v1.1.0-rc.2` | 🔄 RC | Corrections signalées par des lecteurs |
+   | `v1.1.0` | ✅ Stable | 1ère version stable publiée |
+   | `v1.1.1-rc.1` | 🔄 RC | Corrections signalées par des lecteurs |
+   | `v1.1.1` | ✅ Stable | Errata publié |
+   | `v1.2.0-rc.1` | 🔄 RC | Candidat (section 2.2 ajoutée) |
+   | `v1.2.0` | ✅ Stable | 2ème version stable publiée |
+   | ... | ... | ... |
+   | `v1.10.0-final` | 🏁 Final | Livre complet, 1ère édition archivée |
+
+4. **Exemple de scénario éditorial (1ère version)**
+
+```
+branches de travail: feature/*
+  └─► sections rédigées et cohérentes
+        └─► branche de release: release/v1.1.0-rc.1   ← relectures et intégrations (PR release/v1.1.0-rc.1 ← feature/*)
+              └─► branche stable: main   ← relecture globale et intégration ✓ (PR main ← release/v1.1.0-rc.1)
+                    └─► branche stable: main   ← RC publiée (tag v1.1.0-rc.1)
+                          └─► corrections d'erreurs signalées par des lecteurs (PR main ← release/v1.1.0-rc.2 ← fix/*)
+                                └─► branche stable: main   ← nouvelle RC publiée (tag v1.1.0-rc.2)
+                                      └─► branche stable: main   ← release stable publiée (tag v1.1.0)
+
+corrections d'erreurs signalées par des lecteurs (PR main ← release/v1.1.1-rc.1 ← fix/*)
+  └─► branche stable: main   ← nouvelle RC publiée (tag v1.1.1-rc.1)
+        └─► branche stable: main   ← errata publié (tag v1.1.1)
+```
+
+```mermaid
+gitGraph
+   commit id: "init"
+   branch "feature/*"
+   checkout "feature/*"
+   commit id: "rédaction sections"
+   branch "release/v1.1.0-rc.1"
+   checkout "release/v1.1.0-rc.1"
+   commit id: "relectures & intégrations"
+   checkout main
+   merge "release/v1.1.0-rc.1" tag: "v1.1.0-rc.1"
+   branch "fix/*"
+   checkout "fix/*"
+   commit id: "corrections lecteurs"
+   checkout main
+   branch "release/v1.1.0-rc.2"
+   checkout "release/v1.1.0-rc.2"
+   merge "fix/*"
+   checkout main
+   merge "release/v1.1.0-rc.2" tag: "v1.1.0-rc.2"
+   commit id: "release stable" tag: "v1.1.0"
+   branch "fix/errata"
+   checkout "fix/errata"
+   commit id: "corrections errata"
+   checkout main
+   branch "release/v1.1.1-rc.1"
+   checkout "release/v1.1.1-rc.1"
+   merge "fix/errata"
+   checkout main
+   merge "release/v1.1.1-rc.1" tag: "v1.1.1-rc.1"
+   commit id: "errata publié" tag: "v1.1.1"
+```
 
 ---
 ## 👀 Relecture et validation
 
-- Vous pouvez demander une relecture en commentant la PR et un relecteur sera assigné
+- Vous pouvez demander une relecture en commentant la PR (avec une `issue` de relecture) et un ou plusieurs relecteurs seront assignés
 - Les corrections se font en pushant sur la même branche
 - Une PR est mergée seulement après approbation + compilation OK
 
@@ -1361,7 +1813,6 @@ chore: mise à jour du template
 En contribuant, vous acceptez ces licences.
 
 ---
-
 **Merci pour votre contribution !**
 Chaque section, correction ou idée compte. 🚀
 
@@ -1369,8 +1820,8 @@ N’hésitez pas à poser vos questions dans les **Discussions GitHub**.
 EOF
 
 # 17. Premier Commit
+echo "📦 Premier commit..."
 git add .
-git commit -m "Initialisation de la structure projet"
+git commit -m "feat(init_project): initialisation du dépôt projet"
 
 echo "✅ Projet initialisé avec succès."
-
