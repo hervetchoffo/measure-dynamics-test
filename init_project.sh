@@ -978,12 +978,10 @@ name: Build Release PDF (Tags)
 on:
   push:
     tags:
-      # Déclenchement sur v1.0.0, v1.2.3-beta, etc.
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
-      - 'v[0-9]+.[0-9]+.[0-9]+-beta'
-      - 'v[0-9]+.[0-9]+.[0-9]+-rc'
-      - 'v[0-9]+.[0-9]+.[0-9]+-final'
+      # Déclenchement sur version RC, stable & d'archivage.
+      - 'v[0-9]+\.[0-9]+\.[0-9]+'             # v1.2.3 (stable)
+      - 'v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+'  # v1.2.3-rc.1 (release candidate)
+      - 'v[0-9]+\.[0-9]+\.[0-9]+-final'       # v1.2.3-final (archivage)
 
 jobs:
   build-release:
@@ -1009,11 +1007,11 @@ jobs:
       - name: Verify Tag format
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
-          # On vérifie si le tag est de la forme vX.Y.Z ou vX.Y.Z-alpha|beta|rc|final
-          REGEX="^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(alpha|beta|rc|final))?$"
+          # On vérifie si le tag est de la forme vX.Y.Z, vX.Y.Z-rc.N ou vX.Y.Z-final
+          REGEX="^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-rc\.[1-9][0-9]*|-final)?$"
           if [[ ! "$TAG_NAME" =~ $REGEX ]]; then
             echo "❌ Tag invalide : $TAG_NAME"
-            echo "Format attendu : vX.Y.Z ou vX.Y.Z[-[alpha|beta|rc|final]]"
+            echo "Format attendu : vX.Y.Z, vX.Y.Z-rc.N ou vX.Y.Z-final"
             exit 1
           fi
           echo "✅ Vérification réussie : $TAG_NAME est bien au format attendu."
@@ -1034,18 +1032,16 @@ jobs:
           fi
 
           # 2. Détermination du statut pour LaTeX
-          if [[ "$TAG_NAME" == *"alpha"* ]]; then
-            STATUS="Version Alpha"
-            DISCLAIMER="Un ou plusieurs chapitre(s) ont été relu(s) et validé(s) mais le livre est actuelement incomplet. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
-          elif [[ "$TAG_NAME" == *"beta"* ]]; then
-            STATUS="Version Bêta"
-            DISCLAIMER="Tous les chapitres de ce livre sont actuellement présents mais une relecture globale est nécessaire. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
-          elif [[ "$TAG_NAME" == *"rc"* ]]; then
-            STATUS="Release Candidate"
-            DISCLAIMER="Version candidate à la publication stable et finalisée de l'ouvrage. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          if [[ "$TAG_NAME" == *"-rc."* ]]; then
+            RC_NUM=$(echo "$TAG_NAME" | grep -oP '(?<=-rc\.)\d+')
+            STATUS="Release Candidate ${RC_NUM}"
+            DISCLAIMER="Version candidate n°${RC_NUM} à la publication stable de l'ouvrage. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          elif [[ "$TAG_NAME" == *"-final" ]]; then
+            STATUS="Édition Finale"
+            DISCLAIMER="Livre complet, relu et archivé. Cette édition ne fera l'objet d'aucune modification ultérieure."
           else
-            STATUS="Édition Officielle"
-            DISCLAIMER="Version stable et finalisée de l'ouvrage."
+            STATUS="Édition Stable"
+            DISCLAIMER="Un ou plusieurs chapitres ou sections ont été entièrement rédigés et relus mais le livre est peut être incomplet. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
           fi
           
           # 3. Export vers GITHUB_OUTPUT (Gestion multi-lignes pour le changelog)
@@ -1101,8 +1097,8 @@ jobs:
             *(Généré automatiquement par GitHub ci-dessous)*
           generate_release_notes: true # Ajoute automatiquement les contributeurs et PRs fusionnées
           draft: false
-          # Marque comme "Pre-release" si le tag contient alpha, beta ou rc
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          # Marque comme "Pre-release" si le tag est une RC (ex. v1.2.3-rc.1)
+          prerelease: ${{ contains(github.ref_name, 'rc') }}
 EOF
 
 # 15.4. Génération du fichier auto-close-issues.yml
@@ -1454,7 +1450,7 @@ Le PDF final est généré dans `main.pdf`.
 ---
 
 ## 📁 Structure du dépôt
-```bash
+```
 measure-dynamics-book/
 ├── main.tex                      # Point d’entrée du document
 ├── preamble/                     # Macros, packages, styles et mise en page (centralisés)
@@ -1540,7 +1536,7 @@ Ce document explique comment participer efficacement au projet.
 ## 📝 Avant de commencer
 
 1. Lisez le [`README.md`](README.md)
-2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-test/milestones)** en cours
+2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-book/milestones)** en cours
 3. Vérifiez qu’il n’existe pas déjà une issue pour votre idée
 
 ---
@@ -1548,23 +1544,26 @@ Ce document explique comment participer efficacement au projet.
 
 Nous utilisons des templates structurés pour garder le projet organisé :
 
+- **Milestone** → `.github/MILESTONE_TEMPLATE.md`
 - **Rédaction / Relecture / Correction** → `.github/ISSUE_TEMPLATE/`
 - **Pull Request** → `.github/PULL_REQUEST_TEMPLATE.md`
-- **Milestone** → `.github/MILESTONE_TEMPLATE.md`
 
-**Toujours** créer une issue avant de commencer à coder.
+**Toujours** créer :
+- un `milestone` pour planifier l'arrivée d'une nouvelle version du livre.
+- une `issue` avant de commencer à coder.
+- une `Pull Request` pour demander la relecture, la validation et l'intégration de code.
 
 ---
 ## 🚀 Processus de contribution
 
-1. **Choisissez ou créez une issue** (avec le template "Rédaction")
-2. **Créez une branche** :
+1. **Choisissez ou créez une issue** (avec le template approprié)
+2. **Créez une branche** (voir [conventions de nommage](#branches)):
    ```bash
-   git checkout -b feature/nom-de-la-section
+   git checkout -b nom-de-ma-branche
    ```
-3. **Développez** votre section
-4. **Committez** avec des messages clairs (voir conventions ci-dessous)
-5. **Poussez** et ouvrez une **Pull Request** (elle doit contenir `Fixes #XX`)
+3. **Développez** votre code
+4. **Committez** avec des messages clairs (voir [conventions de nommage](#commits))
+5. **Poussez** et ouvrez une **Pull Request** (voir [conventions de nommage](#pull-requests))
 6. **Attendez la relecture**
 
 ---
@@ -1573,23 +1572,30 @@ Nous utilisons des templates structurés pour garder le projet organisé :
 - Utilisez toujours les macros définies dans `preamble/`
 - Indentez correctement et commentez les parties complexes
 - Évitez les commandes obsolètes (`\it`, `\bf`, etc.)
-- Utilisez une approche REST-like de représentation des ressources LaTeX (`chapter`, `section`, `subsection`, `subsubsection`)
-- Utilisez une arborescence modulaire et hiérarchique grâce à la commande LaTeX `\input{...}` avec des **chemins complets** depuis la racine
-- Utilisez le nommage des dossiers qui suit :
-  - Chapitres : NN-nom-du-chapitre (ex. 02-techniques-construction) avec `NN-` préfixe numérique d’ordre.
-  - Sections : NN-nom-de-la-section (ex. 02-riesz-markov)
-  - Sous‑sections (resp. Sous-sous-section): placées dans subs/NN-nom sous la section (resp. sous-section)
-  - Appendices : A-nom, B-nom, … (lettres pour distinguer des chapitres)
-- Utilisez le nommage des fichiers qui suit :
-  - Chapitre : chapter.tex (dans chapters/NN-nom/)
-  - Section : section.tex (dans chapters/NN-nom/sections/NN-nom/)
-  - Sous‑section : sub.tex (dans chapters/.../sections/.../subs/NN-nom/)
-  - Sous‑sous-section : sub.tex (dans chapters/.../sections/.../subs/.../subs/NN-nom/)
-  - Appendice : appendix.tex (dans appendices/A-nom/)
-- Style de nommage : kebab-case (tirets), minuscules, pas d’espaces, pas d’accents dans les noms de fichiers/dossiers.
+- Respectez les conventions de nommage des fichiers LaTeX (voir [conventions de nommage](#code-latex))
 
-**Arborescence expliquée (extrait commenté)**
-```bash
+---
+## 📌 Conventions de nommage
+
+### Code LaTeX
+
+1. **Principes généraux**
+  - Approche REST-like pour représenter les ressources LaTeX (`chapter`, `section`, `subsection`, `subsubsection`)
+  - Arborescence modulaire et hiérarchique grâce à la commande LaTeX `\input{...}` avec des **chemins complets** depuis la racine
+  - Style de nommage : kebab-case (tirets), minuscules, pas d’espaces, pas d’accents dans les noms de fichiers/dossiers
+2. **Nommage des dossiers**
+  - Chapitres : NN-nom-du-chapitre placé sous le dossier `chapters` avec `NN-` préfixe d’ordre numérique  (ex. `chapters/02-techniques-construction`) 
+  - Sections : NN-nom-de-la-section placé sous un dossier `sections` (ex. `chapters/02-techniques-construction/sections/02-riesz-markov`)
+  - Sous‑sections (resp. Sous-sous-section): NN-nom-de-la-sous-section placé sous un dossier `subs` de section (resp. sous-section)
+  - Appendices : A-nom, B-nom, … (lettres pour distinguer des chapitres) et placé sous le dossier `appendices`
+3. **Nommage des fichiers**
+  - Chapitre : chapter.tex (dans chapters/NN-nom-du-chapitre/)
+  - Section : section.tex (dans chapters/.../sections/NN-nom-de-la-section/)
+  - Sous‑section : sub.tex (dans chapters/.../sections/.../subs/NN-nom-de-la-sous-section/)
+  - Sous‑sous-section : sub.tex (dans chapters/.../sections/.../subs/.../subs/NN-nom-de-la-sous-sous-section/)
+  - Appendice : appendix.tex (dans appendices/A-nom/)
+4. **Arborescence expliquée (extrait commenté)**
+```
 chapters/
 └─ 02-techniques-construction/
    ├─ chapter.tex                # contient \input{chapters/02-.../sections/.../section}
@@ -1606,8 +1612,7 @@ chapters/
       └─ 03-produit-desintegration/
          └─ section.tex
 ```
-
-**Exemple de code LaTeX (section 2.2)**
+5. **Exemple de code LaTeX (section 2.2)**
 ```latex
 \section{Représentation de Riesz–Markov}
 
@@ -1616,13 +1621,10 @@ chapters/
 \input{chapters/02-techniques-construction/sections/02-riesz-markov/subs/03-riesz-markov/sub}
 ```
 
----
-## 📌 Conventions de nommage
-
 ### Branches
 
 1. **Principes généraux**
-  - But : rendre les branches lisibles, traçables et liées à une unité logique du dépôt (chapitre, section, sous‑section, sous-sous-section, appendice)
+  - But : rendre les branches lisibles, traçables et liées à une unité logique du dépôt (chapitre, section, sous‑section, sous-sous-section, annexe)
   - Format : `<type>/<scope>/<short-description>` ou `<type>/<scope>` (resp. `<type>/<short-description>`) si description (resp. scope) non nécessaire
   - Style : kebab-case pour le `scope` et la `short-description`, pas d’accents, pas d’espaces, minuscules
 2. **Types recommandés**
@@ -1637,7 +1639,7 @@ chapters/
   - Longueur : garder la branche < 80 caractères si possible avec une description courte de 3 à 6 mots, explicite (ex. ajout-exemples, typo-theoreme, mise-a-jour-biblio)
   - Ticket lié : si une issue existe, préfixer la description par le numéro `issue-NN` ou ajouter `-issue-NN` à la fin (ex. `fix/01-espaces-mesures/03-classe-monotone/issue-123-typo-theoreme`)
 4. **Exemples**
-  - `release/v0.1.0-alpha`
+  - `release/v1.1.0-rc.1`
   - `feature/02-techniques-construction/02-riesz-markov/01-integration`
   - `fix/01-espaces-mesures/03-classe-monotone/issue-123-typo-theoreme`
   - `refactor/chapters-structure/move-sections-to-subs`
@@ -1664,41 +1666,141 @@ chapters/
   - chore : tâches d’infrastructure (templates, workflows, préambule, site web)
 3. **Bonnes pratiques**
   - Un changement logique par commit (atomicité)
-  - Utilisez le scope pour indiquer chapitre/fichier/composant
-  - Utilisez le footer pour référencer l'issue: Fixes #NN pour fermer, Refs: #NN pour lier
+  - Utilisez le scope pour indiquer intro/chapitre/annexe/biblio/fichier/composant
+  - Utilisez le footer pour référencer l'issue: `Fixes #NN` pour fermer, `Refs: #NN` pour lier
 4. **Commandes utiles**
 ```bash
 git commit -m "<type>(<scope>): <description>" # ceci est un commit simple
 git commit -m "<type>(<scope>): <short-description>" -m "<body>" -m "<footer>" #ceci est un commit multi-lignes
-git commit -m $'<type>(<scope>): <short-description>\n\n<body>\n\n<footer>' #ceci aussi est un commit multi-lignes
+git commit -F - <<'COMMIT' #ceci aussi est un commit multi-lignes (heredoc)
+<type>(<scope>): <short-description>
+
+<body>
+
+<footer>
+COMMIT
+git commit -m $'<type>(<scope>): <short-description>\n\n<body>\n\n<footer>' #ceci est un autre commit multi-lignes (saut de ligne)
 ```
 5. **Exemples**
 ```bash
 git commit -m "feat(annexe-a): ajouter section sur méthodes numériques"
 git commit -m "fix(chapitre-02): corriger typo lemme 2.3"
 git commit -m "fix(chapitre-02): corriger typo lemme 2.3" -m "Correction d'une faute dans l'énoncé; ajustement mineur de la démonstration." -m "Refs: #123"
-git commit -m $'fix(chapitre-02): corriger typo lemme 2.3\n\nCorrection détaillée...\n\nFixes #321'
+git commit -F - <<'COMMIT'
+fix(chapitre-02): corriger typo lemme 2.3
+
+Correction détaillée...
+
+Fixes #312
+COMMIT
+git commit -m $'fix(chapitre-02): corriger typo lemme 2.3\n\nCorrection détaillée...\n\nFixes #231'
 git commit -m "refactor(preamble): regrouper macros de mise en page"
-git commit -m "docs(contributing): ajouter bonnes pratiques de commit"
+git commit -m "docs(CONTRIBUTING): ajouter bonnes pratiques de commit"
 git commit -m "chore(ci): ajouter job latexmk pour PR"
 ```
 
 ### Pull Requests
+
 - Titre clair : `Section 3.2 – Théorème ergodique`
 - Description remplie avec le template
 - Doit contenir `Fixes #XX` ou `Closes #XX`
 
+**Checklist avant PR** :
+- Compilation locale réussie (`make pdf`)
+- Pas de warning LaTeX
+- Bibliographie à jour (`biber`)
+- Respect des conventions de style du projet
+
+### Releases
+
+1. **Numéros de versions**
+
+   Le versionnage du livre suit une logique SemVer `MAJOR.MINOR.PATCH[-STATUS]` avec la transposition `MAJOR`/`MINOR`/`PATCH`/`STATUS` qui suit :
+
+   | SemVer | Équivalent éditorial | Exemple |
+   |--------|----------------------|---------|
+   | MAJOR | Édition du livre (refonte, réorganisation profonde) | `v2.0.0` = 2ème édition |
+   | MINOR | Ajout d'un chapitre ou d'une section | `v1.3.0` = nouveau chapitre |
+   | PATCH | Correction d'erreur, faute, reformulation mineure | `v1.3.1` = errata |
+   | STATUS | État éditorial du livre | `v1.1.0-rc.2` = 2ème version candidate à publication |
+
+2. **Cycles éditoriaux**
+
+  - Les cycles d'édition sont courts afin d'obtenir des `feedbacks` réguliers de la part des relecteurs.
+  - Le processus d'édition est allégé par la suppression des phases de pré-release `alpha` et `beta`: passage direct en `RC`.
+  - Une ou deux (tout au plus) `RC` sont suffisantes pour la publication d'une version stable de l'ouvrage.
+  - Chaque version stable du livre doit correspondre à des sections entièrement rédigées, relues et cohérentes.
+  - Certaines sections présentes dans la table des matières peuvent ne pas encore avoir été rédigées dans une version stable du livre.
+  - Une version dont le champs `STATUS` vaut `-final` exprime le fait que le livre est entièrement rédigé et prêt pour archivage.
+
+3. **Exemple de scénario éditorial (1ère édition)**
+
+   | Version | Statut | Description |
+   |---------|--------|-------------|
+   | `v1.1.0-rc.1` | 🔄 RC | Premier candidat (chapitre 1 complet) |
+   | `v1.1.0-rc.2` | 🔄 RC | Corrections signalées par des lecteurs |
+   | `v1.1.0` | ✅ Stable | 1ère version stable publiée |
+   | `v1.1.1-rc.1` | 🔄 RC | Corrections signalées par des lecteurs |
+   | `v1.1.1` | ✅ Stable | Errata publié |
+   | `v1.2.0-rc.1` | 🔄 RC | Candidat (section 2.2 ajoutée) |
+   | `v1.2.0` | ✅ Stable | 2ème version stable publiée |
+   | ... | ... | ... |
+   | `v1.10.0-final` | 🏁 Final | Livre complet, 1ère édition archivée |
+
+4. **Exemple de scénario éditorial (1ère version)**
+
+```
+branches de travail: feature/*
+  └─► sections rédigées et cohérentes
+        └─► branche de release: release/v1.1.0-rc.1   ← relectures et intégrations (PR release/v1.1.0-rc.1 ← feature/*)
+              └─► branche stable: main   ← relecture globale et intégration ✓ (PR main ← release/v1.1.0-rc.1)
+                    └─► branche stable: main   ← RC publiée (tag v1.1.0-rc.1)
+                          └─► corrections d'erreurs signalées par des lecteurs (PR main ← release/v1.1.0-rc.2 ← fix/*)
+                                └─► branche stable: main   ← nouvelle RC publiée (tag v1.1.0-rc.2)
+                                      └─► branche stable: main   ← release stable publiée (tag v1.1.0)
+
+corrections d'erreurs signalées par des lecteurs (PR main ← release/v1.1.1-rc.1 ← fix/*)
+  └─► branche stable: main   ← nouvelle RC publiée (tag v1.1.1-rc.1)
+        └─► branche stable: main   ← errata publié (tag v1.1.1)
+```
+
+```mermaid
+gitGraph
+   commit id: "init"
+   branch "feature/*"
+   checkout "feature/*"
+   commit id: "rédaction sections"
+   branch "release/v1.1.0-rc.1"
+   checkout "release/v1.1.0-rc.1"
+   commit id: "relectures & intégrations"
+   checkout main
+   merge "release/v1.1.0-rc.1" tag: "v1.1.0-rc.1"
+   branch "fix/*"
+   checkout "fix/*"
+   commit id: "corrections lecteurs"
+   checkout main
+   branch "release/v1.1.0-rc.2"
+   checkout "release/v1.1.0-rc.2"
+   merge "fix/*"
+   checkout main
+   merge "release/v1.1.0-rc.2" tag: "v1.1.0-rc.2"
+   commit id: "release stable" tag: "v1.1.0"
+   branch "fix/errata"
+   checkout "fix/errata"
+   commit id: "corrections errata"
+   checkout main
+   branch "release/v1.1.1-rc.1"
+   checkout "release/v1.1.1-rc.1"
+   merge "fix/errata"
+   checkout main
+   merge "release/v1.1.1-rc.1" tag: "v1.1.1-rc.1"
+   commit id: "errata publié" tag: "v1.1.1"
+```
+
 ---
 ## 👀 Relecture et validation
 
-**Checklist avant PR** :
-- [ ] Compilation locale réussie (`make pdf`)
-- [ ] Pas de warning LaTeX
-- [ ] Bibliographie à jour (`biber`)
-- [ ] Respect des conventions de style du projet
-
-**Workflow recommandé**
-- Vous pouvez demander une relecture en commentant la PR et un relecteur sera assigné
+- Vous pouvez demander une relecture en commentant la PR (avec une `issue` de relecture) et un ou plusieurs relecteurs seront assignés
 - Les corrections se font en pushant sur la même branche
 - Une PR est mergée seulement après approbation + compilation OK
 
