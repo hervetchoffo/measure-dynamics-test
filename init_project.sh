@@ -978,12 +978,10 @@ name: Build Release PDF (Tags)
 on:
   push:
     tags:
-      # Déclenchement sur v1.0.0, v1.2.3-beta, etc.
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
-      - 'v[0-9]+.[0-9]+.[0-9]+-beta'
-      - 'v[0-9]+.[0-9]+.[0-9]+-rc'
-      - 'v[0-9]+.[0-9]+.[0-9]+-final'
+      # Déclenchement sur version RC, stable & d'archivage.
+      - 'v[0-9]+\.[0-9]+\.[0-9]+'             # v1.2.3 (stable)
+      - 'v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+'  # v1.2.3-rc.1 (release candidate)
+      - 'v[0-9]+\.[0-9]+\.[0-9]+-final'       # v1.2.3-final (archivage)
 
 jobs:
   build-release:
@@ -1009,11 +1007,11 @@ jobs:
       - name: Verify Tag format
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
-          # On vérifie si le tag est de la forme vX.Y.Z ou vX.Y.Z-alpha|beta|rc|final
-          REGEX="^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(alpha|beta|rc|final))?$"
+          # On vérifie si le tag est de la forme vX.Y.Z, vX.Y.Z-rc.N ou vX.Y.Z-final
+          REGEX="^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-rc\.[1-9][0-9]*|-final)?$"
           if [[ ! "$TAG_NAME" =~ $REGEX ]]; then
             echo "❌ Tag invalide : $TAG_NAME"
-            echo "Format attendu : vX.Y.Z ou vX.Y.Z[-[alpha|beta|rc|final]]"
+            echo "Format attendu : vX.Y.Z, vX.Y.Z-rc.N ou vX.Y.Z-final"
             exit 1
           fi
           echo "✅ Vérification réussie : $TAG_NAME est bien au format attendu."
@@ -1034,18 +1032,16 @@ jobs:
           fi
 
           # 2. Détermination du statut pour LaTeX
-          if [[ "$TAG_NAME" == *"alpha"* ]]; then
-            STATUS="Version Alpha"
-            DISCLAIMER="Un ou plusieurs chapitre(s) ont été relu(s) et validé(s) mais le livre est actuelement incomplet. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
-          elif [[ "$TAG_NAME" == *"beta"* ]]; then
-            STATUS="Version Bêta"
-            DISCLAIMER="Tous les chapitres de ce livre sont actuellement présents mais une relecture globale est nécessaire. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
-          elif [[ "$TAG_NAME" == *"rc"* ]]; then
-            STATUS="Release Candidate"
-            DISCLAIMER="Version candidate à la publication stable et finalisée de l'ouvrage. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          if [[ "$TAG_NAME" == *"-rc."* ]]; then
+            RC_NUM=$(echo "$TAG_NAME" | grep -oP '(?<=-rc\.)\d+')
+            STATUS="Release Candidate ${RC_NUM}"
+            DISCLAIMER="Version candidate n°${RC_NUM} à la publication stable de l'ouvrage. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
+          elif [[ "$TAG_NAME" == *"-final" ]]; then
+            STATUS="Édition Finale"
+            DISCLAIMER="Livre complet, relu et archivé. Cette édition ne fera l'objet d'aucune modification ultérieure."
           else
-            STATUS="Édition Officielle"
-            DISCLAIMER="Version stable et finalisée de l'ouvrage."
+            STATUS="Édition Stable"
+            DISCLAIMER="Un ou plusieurs chapitres ou sections ont été entièrement rédigés et relus mais le livre est peut être incomplet. Toute remarque ou suggestion est la bienvenue via le dépôt GitHub."
           fi
           
           # 3. Export vers GITHUB_OUTPUT (Gestion multi-lignes pour le changelog)
@@ -1101,8 +1097,8 @@ jobs:
             *(Généré automatiquement par GitHub ci-dessous)*
           generate_release_notes: true # Ajoute automatiquement les contributeurs et PRs fusionnées
           draft: false
-          # Marque comme "Pre-release" si le tag contient alpha, beta ou rc
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          # Marque comme "Pre-release" si le tag est une RC (ex. v1.2.3-rc.1)
+          prerelease: ${{ contains(github.ref_name, 'rc') }}
 EOF
 
 # 15.4. Génération du fichier auto-close-issues.yml
@@ -1454,7 +1450,7 @@ Le PDF final est généré dans `main.pdf`.
 ---
 
 ## 📁 Structure du dépôt
-```bash
+```
 measure-dynamics-book/
 ├── main.tex                      # Point d’entrée du document
 ├── preamble/                     # Macros, packages, styles et mise en page (centralisés)
@@ -1540,7 +1536,7 @@ Ce document explique comment participer efficacement au projet.
 ## 📝 Avant de commencer
 
 1. Lisez le [`README.md`](README.md)
-2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-test/milestones)** en cours
+2. Consultez les **[Milestones](https://github.com/hervetchoffo/measure-dynamics-book/milestones)** en cours
 3. Vérifiez qu’il n’existe pas déjà une issue pour votre idée
 
 ---
