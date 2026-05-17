@@ -40,6 +40,7 @@
 ```
 measure-dynamics-book/
 ├── main.tex                        # Point d'entrée unique
+├── PROJECT_CONTEXT.md              # Contexte inter-sessions Claude AI (STABLE / VOLATILE)
 ├── preamble/                       # packages.tex · macros.tex · theoremstyle.tex · layout.tex
 ├── frontmatter/                    # titlepage.tex · introduction/introduction.tex
 ├── chapters/                       # NN-nom-chapitre/chapter.tex + sections/ + subs/
@@ -51,7 +52,7 @@ measure-dynamics-book/
 ├── site/                           # index.md · status.md · roadmap.md · changelog.md · _config.yml
 ├── version.tex                     # GÉNÉRÉ par CI — ne pas versionner (dans .gitignore)
 └── .github/
-    ├── ISSUE_TEMPLATE/             # writing_issue.md · review_issue.md · correction_issue.md
+    ├── ISSUE_TEMPLATE/             # writing_issue.md · review_issue.md · correction_issue.md · task_issue.md
     ├── PULL_REQUEST_TEMPLATE.md
     ├── MILESTONE_TEMPLATE.md
     └── workflows/
@@ -82,6 +83,10 @@ Milestone vX.Y.Z — Nom
 - Template d'issue infrastructure : `task_issue.md` (contient le lien discussion Claude AI)
 - Template d'issue éditoriale : `writing/review/correction_issue.md`
 - Template de milestone : `MILESTONE_TEMPLATE.md` (guide vierge pour créer les milestones sur GitHub)
+- `Fixes #XX` dans une PR : sans tiret Markdown devant
+- ⚠️ Point d'action : mettre à jour `PULL_REQUEST_TEMPLATE.md` pour retirer le tiret devant `Fixes #XX`
+
+### Branches
 - Format : `<type>/<scope>/<short-description>`
 - Types : `release` · `feature` · `fix` · `refactor` · `docs` · `chore`
 - Scope obligatoire pour le contenu (ex. `feature/02-techniques-construction/02-riesz-markov`)
@@ -133,10 +138,10 @@ F. Des fonctions élémentaires
 ## [VOLATILE] Milestone courant
 
 **Version cible** : `v1.1.0` — **Outillage**
-**Statut** : 🔄 En cours — phase de planification
+**Statut** : 🔄 En cours
 
 ### Objectifs v1.1.0
-- [ ] Mise en place des sessions Claude AI (ce fichier `PROJECT_CONTEXT.md`)
+- [x] Mise en place des sessions Claude AI (ce fichier `PROJECT_CONTEXT.md`)
 - [ ] Optimisation de `init_project.sh` (idempotence · mode `dry-run` · fonctions helper)
 - [ ] Réflexion sur la simplification des templates issues (regrouper rédaction/relecture/correction ?)
 - [ ] Documentation GitHub : usage des labels · politique de squash des commits
@@ -145,7 +150,7 @@ F. Des fonctions élémentaires
 
 | # | Cluster | Branche feature | Statut |
 |---|---|---|---|
-| 01 | `v1.1.0 — Outillage / 01 — Gestion du contexte Claude` | `feature/v1.1.0/gestion-contexte-claude` | ✅ En cours |
+| 01 | `v1.1.0 — Outillage / 01 — Gestion du contexte Claude` | `feature/v1.1.0/gestion-contexte-claude` | ✅ Mergée |
 | 02 | `v1.1.0 — Outillage / 02 — Optimisation init_project.sh` | `feature/v1.1.0/optimisation-init-script` | 📋 Planifié |
 | 03 | `v1.1.0 — Outillage / 03 — Simplification templates issues` | `feature/v1.1.0/simplification-templates-issues` | 📋 Planifié |
 | 04 | `v1.1.0 — Outillage / 04 — Labels et squash` | `feature/v1.1.0/labels-et-squash` | 📋 Planifié |
@@ -189,19 +194,27 @@ F. Des fonctions élémentaires
 ## [VOLATILE] Dernière session
 
 **Conversation** : `v1.1.0 — Outillage / 01 — Gestion du contexte Claude`
-**Date** : 2026-05-16
+**Date** : 2026-05-17
 **Décisions prises** :
 - `PROJECT_CONTEXT.md` adopté comme mémoire externe structurée (D-04 ✅)
 - Granularité : 1 conversation = 1 cluster thématique = 1 issue GitHub
 - Structure STABLE / VOLATILE adoptée
 - Noms des milestones arrêtés : Genèse · Outillage · Atelier · Vitrine · Excellence
-- Nomenclature des conversations : `[vX.Y.Z — Nom] / [NN — Cluster]`
+- Nomenclature des conversations : `vX.Y.Z — Nom / NN — Cluster` (sans crochets)
 - Workflow GitHub documenté : issue → feature/* → release/* → main → tag → Release
 - Nouveau template `task_issue.md` pour les tâches d'infrastructure (avec lien Claude AI)
+- Fichiers `milestone-vX.Y.Z.md` inutiles dans le dépôt — GitHub est la source de vérité
+- Crochets dans les titres de templates : placeholders visuels uniquement, pas à modifier
+- `Fixes #XX` dans PR body : sans tiret Markdown devant
 
 **Produits** :
 - `PROJECT_CONTEXT.md`
 - `.github/ISSUE_TEMPLATE/task_issue.md`
+
+**À faire avant la prochaine session** :
+- Créer le milestone `v1.1.0 — Outillage` sur GitHub
+- Créer la branche `release/v1.1.0-outillage`
+- Créer l'issue #01 et ouvrir la PR `feature/v1.1.0/gestion-contexte-claude` → `release/v1.1.0-outillage`
 
 **Prochaine session** :
 - `v1.1.0 — Outillage / 02 — Optimisation init_project.sh` (idempotence · dry-run · fonctions helper)
